@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import CharacterSprite from '../ui/CharacterSprite'
 import SpeechBubble from '../ui/SpeechBubble'
+import Termine from '../ui/Termine'
 import BudgetPieChart from '../charts/BudgetPieChart'
 import {
   ALLOGGI,
@@ -324,7 +325,9 @@ export default function SceneBudget({ gameState, dispatch }) {
             <span className="text-slate-600"> / </span>
             <span className="text-green-400">{pctRisparmio}</span>
           </span>
-          <span className="text-slate-500 text-xs font-mono">obiettivo 50 / 30 / 20</span>
+          <span className="text-slate-500 text-xs font-mono">
+            <Termine id="regola503020">obiettivo 50 / 30 / 20</Termine>
+          </span>
         </div>
 
         <div className="mb-3">
@@ -340,7 +343,7 @@ export default function SceneBudget({ gameState, dispatch }) {
           <img
             src={pctRisparmio < 10 ? '/assets/sara_dubbiosa.png' : '/assets/sara.png'}
             alt=""
-            className="h-28 w-auto shrink-0 drop-shadow-xl"
+            className="h-40 w-auto shrink-0 drop-shadow-xl animate-bob"
           />
           <div className="flex-1 min-w-0 mb-5">
             <SpeechBubble speaker="Sara" text={consiglio} verso="left" />

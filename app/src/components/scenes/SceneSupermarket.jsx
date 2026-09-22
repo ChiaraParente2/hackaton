@@ -105,7 +105,7 @@ export default function SceneSupermarket({ gameState, dispatch }) {
             <img
               src="/assets/protagonista_dubbioso.png"
               alt=""
-              className="h-32 w-auto shrink-0 drop-shadow-xl animate-slide-in"
+              className="h-44 w-auto shrink-0 drop-shadow-xl animate-bob"
             />
             <div className="flex-1 min-w-0 mb-5">
               <SpeechBubble
@@ -186,7 +186,7 @@ export default function SceneSupermarket({ gameState, dispatch }) {
             <img
               src="/assets/protagonista_dubbioso.png"
               alt=""
-              className="h-28 w-auto shrink-0 drop-shadow-xl"
+              className="h-40 w-auto shrink-0 drop-shadow-xl animate-bob"
             />
             <div className="flex-1 min-w-0 mb-5">
               <SpeechBubble key={item.label} speaker="Tu" verso="left" text={item.tooltip} />

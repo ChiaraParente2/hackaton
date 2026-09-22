@@ -212,6 +212,73 @@ export function calcolaPunteggio(s) {
   return Math.max(0, Math.min(100, p))
 }
 
+// ─── Glossario ──────────────────────────────────────────────────────────────
+// I termini che il gioco usa davvero. Vengono mostrati col componente
+// <Termine id="..."> e spiegati al tocco: un gioco di educazione finanziaria
+// non può usare "TAEG" senza dire cosa significa.
+export const GLOSSARIO = {
+  tan: {
+    sigla: 'TAN',
+    nome: 'Tasso Annuo Nominale',
+    testo:
+      'Il tasso di interesse puro, senza le spese. È il numero che le pubblicità mettono in grande, perché è il più basso.',
+  },
+  taeg: {
+    sigla: 'TAEG',
+    nome: 'Tasso Annuo Effettivo Globale',
+    testo:
+      'Il costo vero del prestito: interessi PIÙ tutte le spese obbligatorie. È sempre maggiore del TAN. Quando confronti due prestiti, guarda solo questo.',
+  },
+  interesseComposto: {
+    sigla: 'Interesse composto',
+    nome: null,
+    testo:
+      'Gli interessi che maturano anche sugli interessi già guadagnati. È il motivo per cui il tempo conta più della cifra che versi: 10 anni battono 10.000 €.',
+  },
+  etf: {
+    sigla: 'ETF',
+    nome: 'Exchange Traded Fund',
+    testo:
+      'Un unico prodotto che contiene centinaia di aziende diverse. Comprandolo diversifichi in automatico e paghi commissioni molto basse.',
+  },
+  diversificazione: {
+    sigla: 'Diversificazione',
+    nome: null,
+    testo:
+      'Non mettere tutto in una cosa sola. Se una va male, le altre reggono. È il modo più economico di ridurre il rischio.',
+  },
+  liquidita: {
+    sigla: 'Liquidità',
+    nome: null,
+    testo:
+      'Quanto in fretta puoi trasformare una cosa in soldi spendibili senza perderci. Il conto è liquido, un investimento molto meno.',
+  },
+  inflazione: {
+    sigla: 'Inflazione',
+    nome: null,
+    testo:
+      'I prezzi che salgono nel tempo. 100 € fermi sul conto fra dieci anni comprano meno di oggi: non perdi soldi, perdi potere d\'acquisto.',
+  },
+  rendimento: {
+    sigla: 'Rendimento',
+    nome: null,
+    testo:
+      'Quanto guadagna un investimento in un anno, in percentuale. Quelli storici sono medie: dentro ci sono anni ottimi e anni in perdita.',
+  },
+  fondoEmergenza: {
+    sigla: 'Fondo emergenza',
+    nome: null,
+    testo:
+      'Da tre a sei mesi delle tue spese, tenuti liquidi e mai toccati. Serve a non finire a chiedere un prestito per una lavatrice rotta.',
+  },
+  regola503020: {
+    sigla: 'Regola 50/30/20',
+    nome: null,
+    testo:
+      'Una traccia, non una legge: 50% alle spese necessarie, 30% a ciò che ti fa stare bene, 20% al futuro. Se l\'affitto sfora il 50%, il resto si stringe.',
+  },
+}
+
 export const CONCETTI = [
   { id: 'budget', nome: 'Budget 50/30/20', icona: '📊' },
   { id: 'risparmio', nome: 'Pagati prima', icona: '🏦' },

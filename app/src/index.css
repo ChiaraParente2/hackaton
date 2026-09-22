@@ -61,5 +61,27 @@
 }
 .animate-pop-in { animation: popIn 0.35s ease-out both; }
 
+/* Respiro dei personaggi: senza, sembrano adesivi incollati */
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+.animate-bob { animation: bob 3.4s ease-in-out infinite; }
+
+/* Evidenzia un elemento appena diventato importante */
+@keyframes attenzione {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
+  50%      { box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.35); }
+}
+.animate-attenzione { animation: attenzione 1.6s ease-in-out 2; }
+
+/* Rispetta chi ha disattivato le animazioni di sistema */
+@media (prefers-reduced-motion: reduce) {
+  .animate-bob,
+  .animate-attenzione,
+  .animate-pulse-money,
+  .animate-float-up { animation: none; }
+}
+
 * { box-sizing: border-box; }
 body { margin: 0; background: #0f172a; }

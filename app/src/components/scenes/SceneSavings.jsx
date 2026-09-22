@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import CharacterSprite from '../ui/CharacterSprite'
 import SpeechBubble from '../ui/SpeechBubble'
+import Termine from '../ui/Termine'
 import CompoundInterestChart from '../charts/CompoundInterestChart'
 import {
   INVESTIMENTI,
@@ -131,7 +132,8 @@ export default function SceneSavings({ gameState, dispatch }) {
               </span>
             </div>
             <p className="text-slate-500 text-[11px] font-mono mb-3">
-              Liquido, sempre disponibile, non rende nulla. Serve a non andare in debito.
+              <Termine id="liquidita">Liquido</Termine>, sempre disponibile, non rende nulla.
+              Serve a non finire a chiedere un prestito per una lavatrice rotta.
             </p>
             <input
               type="range"
@@ -180,7 +182,7 @@ export default function SceneSavings({ gameState, dispatch }) {
                   : '/assets/sara.png'
               }
               alt=""
-              className="h-28 w-auto shrink-0 drop-shadow-xl"
+              className="h-40 w-auto shrink-0 drop-shadow-xl animate-bob"
             />
             <div className="flex-1 min-w-0 mb-5">
               <SpeechBubble speaker="Sara" text={tip} verso="left" />
@@ -228,7 +230,8 @@ export default function SceneSavings({ gameState, dispatch }) {
             </span>
           </div>
           <p className="text-slate-500 text-[11px] font-mono mb-3">
-            Cresce nel tempo, ma può scendere. Non contarci per le emergenze.
+            Cresce grazie all'<Termine id="interesseComposto">interesse composto</Termine>, ma può
+            scendere. Non contarci per le emergenze.
           </p>
           <input
             type="range"
@@ -287,6 +290,12 @@ export default function SceneSavings({ gameState, dispatch }) {
               ))}
             </div>
 
+            <p className="text-slate-500 text-[10px] font-mono mt-2 leading-snug">
+              Un <Termine id="etf" /> contiene già centinaia di aziende: la{' '}
+              <Termine id="diversificazione">diversificazione</Termine> è il modo più economico di
+              ridurre il rischio.
+            </p>
+
             {investScelto && (
               <div className="bg-green-900/40 border border-green-500/30 rounded-lg p-3 mt-3">
                 <p className="text-green-300 font-mono text-xs leading-relaxed">
@@ -325,7 +334,7 @@ export default function SceneSavings({ gameState, dispatch }) {
           <img
             src={investeSenzaRete ? '/assets/sara_dubbiosa.png' : '/assets/sara.png'}
             alt=""
-            className="h-28 w-auto shrink-0 drop-shadow-xl"
+            className="h-40 w-auto shrink-0 drop-shadow-xl animate-bob"
           />
           <div className="flex-1 min-w-0 mb-5">
             <SpeechBubble speaker="Sara" text={tipInv} verso="left" />

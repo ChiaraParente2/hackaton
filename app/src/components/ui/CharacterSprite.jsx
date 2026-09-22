@@ -24,10 +24,10 @@ const PENSIEROSI = new Set([
 ])
 
 const ALTEZZE = {
-  sm: 'h-28',
-  md: 'h-44',
-  lg: 'h-60',
-  xl: 'h-72',
+  sm: 'h-36',
+  md: 'h-56',
+  lg: 'h-72',
+  xl: 'h-[22rem] sm:h-96',
 }
 
 export default function CharacterSprite({
@@ -42,19 +42,23 @@ export default function CharacterSprite({
   const lato = position === 'left' ? 'left-1 sm:left-4' : 'right-1 sm:right-4'
 
   return (
-    <div className={`absolute bottom-0 ${lato} pointer-events-none select-none z-10`}>
+    <div
+      className={`absolute bottom-0 ${lato} pointer-events-none select-none z-10`}
+      style={{ transform: flip ? 'scaleX(-1)' : undefined }}
+    >
       {/* ombra a terra: aggancia il personaggio allo sfondo invece di
           lasciarlo "appiccicato" sopra */}
       <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-3 rounded-[50%] bg-black/45 blur-md" />
-      <img
-        src={src}
-        alt=""
-        className={`${ALTEZZE[size] ?? ALTEZZE.md} w-auto object-contain animate-slide-in relative`}
-        style={{
-          filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.5))',
-          transform: flip ? 'scaleX(-1)' : undefined,
-        }}
-      />
+      <div className="animate-slide-in">
+        {/* il bob sta su un wrapper separato: slide-in e respiro usano
+            entrambi transform e si annullerebbero a vicenda */}
+        <img
+          src={src}
+          alt=""
+          className={`${ALTEZZE[size] ?? ALTEZZE.md} w-auto object-contain animate-bob relative`}
+          style={{ filter: 'drop-shadow(0 10px 18px rgba(0,0,0,0.5))' }}
+        />
+      </div>
     </div>
   )
 }
