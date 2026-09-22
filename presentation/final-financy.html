@@ -299,6 +299,55 @@
   footer .mark { color: var(--white); font-size: 21px; font-weight: 600; letter-spacing: -.03em; }
   footer .mark span { color: var(--purple); }
 
+  /* ── Personaggi del gioco ──────────────────────────────────── */
+  /* PNG a fondo trasparente presi dagli asset del gioco.
+     Sempre decorativi: mai sotto al testo, spariti sotto gli 860px. */
+
+  .hero-cast {
+    position: absolute; right: 3vw; bottom: 0; z-index: 3;
+    display: flex; align-items: flex-end; pointer-events: none;
+  }
+  .hero-cast img {
+    display: block; width: auto; height: 400px;
+    filter: drop-shadow(0 22px 44px rgba(0,0,0,.5));
+  }
+  .hero-cast img.behind {
+    height: 350px; margin-right: -52px; opacity: .9;
+  }
+  @media (min-width: 1120px) { .hero .wrap { padding-right: 330px; } }
+  @media (max-width: 1119px) {
+    .hero .wrap { padding-right: 230px; }
+    .hero-cast img { height: 290px; }
+    .hero-cast img.behind { height: 250px; margin-right: -40px; }
+  }
+  @media (max-width: 860px) {
+    .hero .wrap { padding-right: 28px; }
+    .hero-cast { display: none; }
+  }
+
+  /* Intestazione di sezione con personaggio a fianco */
+  .head-cast {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 48px; align-items: end; margin-bottom: 48px;
+  }
+  .head-cast .sub { margin-bottom: 0; }
+  .head-cast img {
+    display: block; width: auto; height: 270px;
+    filter: drop-shadow(0 14px 28px rgba(0,0,0,.14));
+  }
+
+  /* Chiusura: Sara accanto alla sua battuta */
+  .closing { display: grid; grid-template-columns: 1fr auto; gap: 56px; align-items: end; }
+  .closing img {
+    display: block; width: auto; height: 400px;
+    filter: drop-shadow(0 16px 32px rgba(0,0,0,.14));
+  }
+  @media (max-width: 860px) {
+    .head-cast, .closing { grid-template-columns: 1fr; gap: 28px; }
+    .head-cast img { display: none; }
+    .closing img { height: 260px; justify-self: center; }
+  }
+
   /* ── Animazione d'ingresso ─────────────────────────────────── */
   .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
   .reveal.in { opacity: 1; transform: none; }
@@ -312,6 +361,7 @@
     .hero::after { display: none; }
     section { padding: 32px 0; page-break-inside: avoid; }
     .card:hover, .scene:hover .scene-n { transform: none; }
+    .hero-cast img, .head-cast img, .closing img { filter: none; height: 220px; }
   }
 </style>
 </head>
@@ -347,6 +397,10 @@
       <div><dt>Backend</dt><dd>Nessuno</dd></div>
     </dl>
   </div>
+  <div class="hero-cast">
+    <img class="behind" src="assets/sara.png" alt="Sara, la vicina che guida il giocatore" />
+    <img src="assets/protagonista.png" alt="Il protagonista del gioco" />
+  </div>
 </div>
 
 <!-- ══ IL PRODOTTO ═══════════════════════════════════════════ -->
@@ -355,7 +409,7 @@
     <p class="kicker">Il prodotto</p>
     <h2 class="reveal">Un mese di vita adulta, condensato in otto minuti</h2>
     <p class="sub reveal">
-      Un gioco narrativo in pixel art: si vive un mese accanto a Sara, la vicina che «ha già fatto
+      Un gioco narrativo illustrato: si vive un mese accanto a Sara, la vicina che «ha già fatto
       tutti gli errori possibili». Sotto, un motore economico unico — ogni cifra a schermo esce
       dallo stesso modello.
     </p>
@@ -392,12 +446,17 @@
 <!-- ══ COME FUNZIONA ═════════════════════════════════════════ -->
 <section class="tint" id="come">
   <div class="wrap">
-    <p class="kicker">Come funziona</p>
-    <h2 class="reveal">Le otto scene del mese</h2>
-    <p class="sub reveal">
-      Una decisione per scena, un concetto sbloccato. Quello che decidi all'inizio ti torna addosso
-      alla fine.
-    </p>
+    <div class="head-cast">
+      <div>
+        <p class="kicker">Come funziona</p>
+        <h2 class="reveal">Le otto scene del mese</h2>
+        <p class="sub reveal">
+          Una decisione per scena, un concetto sbloccato. Quello che decidi all'inizio ti torna
+          addosso alla fine.
+        </p>
+      </div>
+      <img class="reveal" src="assets/protagonista_dubbioso.png" alt="Il protagonista indeciso davanti a una scelta" />
+    </div>
 
     <div class="scenes reveal">
       <div class="scene">
@@ -707,15 +766,18 @@
 <!-- ══ CHIUSURA ══════════════════════════════════════════════ -->
 <section>
   <div class="wrap">
-    <div class="reveal" style="max-width:34ch">
-      <p class="kicker">In una frase</p>
-      <h2 style="max-width:100%">
-        «Il fondo emergenza non è opzionale. È la differenza tra un imprevisto e una crisi.»
-      </h2>
-      <p style="font-size:16px;color:var(--grey-600);margin-top:18px">
-        Da una slide non la ricorderebbe nessuno. Qui gliela dice Sara nel momento esatto in cui il
-        frigo si è rotto.
-      </p>
+    <div class="closing">
+      <div class="reveal" style="max-width:34ch">
+        <p class="kicker">In una frase</p>
+        <h2 style="max-width:100%">
+          «Il fondo emergenza non è opzionale. È la differenza tra un imprevisto e una crisi.»
+        </h2>
+        <p style="font-size:16px;color:var(--grey-600);margin-top:18px">
+          Da una slide non la ricorderebbe nessuno. Qui gliela dice Sara nel momento esatto in cui
+          il frigo si è rotto.
+        </p>
+      </div>
+      <img class="reveal" src="assets/sara.png" alt="Sara, che nel gioco pronuncia questa frase" />
     </div>
   </div>
 </section>
