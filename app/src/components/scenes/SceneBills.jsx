@@ -6,7 +6,7 @@ const DOMANDE = [
   {
     id: 'luce',
     icona: '⚡',
-    mittente: 'Enel Energia',
+    mittente: 'Fornitore luce',
     domanda: 'Quante ore al giorno tieni le luci accese?',
     opzioni: [
       { label: '4-6 ore, LED e attenzione', costo: 28 },
@@ -17,7 +17,7 @@ const DOMANDE = [
   {
     id: 'gas',
     icona: '🔥',
-    mittente: 'Eni Plenitude',
+    mittente: 'Fornitore gas',
     domanda: 'Come usi il riscaldamento?',
     opzioni: [
       { label: 'Solo quando serve, a bassa temperatura', costo: 35 },
@@ -28,7 +28,7 @@ const DOMANDE = [
   {
     id: 'internet',
     icona: '📡',
-    mittente: 'TIM',
+    mittente: 'Operatore internet',
     domanda: 'Internet: quale piano hai scelto?',
     opzioni: [
       { label: 'Fibra base', costo: 29 },
@@ -74,25 +74,25 @@ export default function SceneBills({ gameState, dispatch }) {
       <div className="absolute inset-0 bg-slate-950/75" />
 
       {/* Il telefono: è lo schermo su cui arrivano le bollette */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-2 h-[52%] z-10">
+      <div className="absolute left-1/2 -translate-x-1/2 top-2 h-[64%] z-10">
         <div className="relative h-full">
           <img src="/assets/phone.png" alt="" className="h-full w-auto drop-shadow-2xl" />
 
           {/* lo schermo: riquadro interno alla cornice */}
           <div className="absolute inset-0 px-[8%] py-[4.5%]">
-            <div className="h-full w-full rounded-[7%] overflow-hidden flex flex-col px-[5%] pt-[13%]">
-              <div className="text-center mb-1.5">
-                <div className="font-mono text-[9px] text-slate-600/80 leading-none">
+            <div className="h-full w-full rounded-[7%] overflow-hidden flex flex-col px-[5%] pt-[12%]">
+              <div className="text-center mb-2">
+                <div className="font-mono text-[11px] text-slate-600/80 leading-none">
                   martedì 22
                 </div>
-                <div className="font-mono text-xl font-bold text-slate-700 leading-tight">
+                <div className="font-mono text-3xl font-bold text-slate-700 leading-tight">
                   {ORE[Math.min(arrivate.length, ORE.length - 1)]}
                 </div>
               </div>
 
-              <div className="flex-1 space-y-1 overflow-hidden">
+              <div className="flex-1 space-y-1.5 overflow-hidden">
                 {arrivate.length === 0 && (
-                  <p className="text-center font-mono text-[8px] text-slate-500/80 mt-3">
+                  <p className="text-center font-mono text-[11px] text-slate-500/80 mt-4">
                     nessuna notifica
                   </p>
                 )}
@@ -102,20 +102,21 @@ export default function SceneBills({ gameState, dispatch }) {
                     <div
                       key={id}
                       style={{ animationDelay: `${i * 60}ms` }}
-                      className="animate-fade-in bg-white/85 rounded-lg px-1.5 py-1 shadow-sm flex items-start gap-1"
+                      className="animate-fade-in bg-white/90 rounded-xl px-2 py-1.5 shadow-sm flex items-start gap-1.5"
                     >
-                      <span className="text-[11px] leading-none mt-0.5">{d.icona}</span>
+                      <span className="text-[16px] leading-none mt-0.5">{d.icona}</span>
                       <div className="min-w-0 flex-1">
                         <div className="flex justify-between items-baseline gap-1">
-                          <span className="font-mono text-[8px] font-bold text-slate-800 truncate">
+                          <span className="font-mono text-[11px] font-bold text-slate-800 truncate">
                             {d.mittente}
                           </span>
-                          <span className="font-mono text-[7px] text-slate-400 shrink-0">
+                          <span className="font-mono text-[9px] text-slate-400 shrink-0">
                             {ORE[i]}
                           </span>
                         </div>
-                        <div className="font-mono text-[8px] text-slate-600 leading-tight">
-                          Bolletta di {euro(bollette[id])}
+                        <div className="font-mono text-[12px] text-slate-700 leading-tight">
+                          Bolletta di{' '}
+                          <span className="font-bold">{euro(bollette[id])}</span>
                         </div>
                       </div>
                     </div>
@@ -123,11 +124,11 @@ export default function SceneBills({ gameState, dispatch }) {
                 })}
 
                 {done && (
-                  <div className="animate-fade-in bg-slate-900/90 rounded-lg px-1.5 py-1 mt-1">
+                  <div className="animate-fade-in bg-slate-900/90 rounded-xl px-2 py-1.5 mt-1.5">
                     <div className="flex justify-between items-baseline">
-                      <span className="font-mono text-[8px] text-slate-300">Totale mese</span>
+                      <span className="font-mono text-[11px] text-slate-300">Totale mese</span>
                       <span
-                        className={`font-mono text-[11px] font-bold ${caro ? 'text-red-400' : 'text-green-400'}`}
+                        className={`font-mono text-[15px] font-bold ${caro ? 'text-red-400' : 'text-green-400'}`}
                       >
                         {euro(totale)}
                       </span>

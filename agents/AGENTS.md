@@ -238,17 +238,24 @@ export function calcolaRata(prezzoFinal, anticipo, anni, tassoAnnuo = 0.035) {
 
 ## ASSET — INVENTARIO COMPLETO
 
-### ASSET DISPONIBILI (già in `app/assets/`)
+### ASSET DISPONIBILI (in `app/public/assets/`)
 
-Tutti i Kenney asset sono **CC0** — uso libero, commerciale, senza attribuzione obbligatoria.
+Tutti generati per il progetto. **Nessun marchio reale** deve comparire nel
+gioco: fornitori, negozi e prodotti sono sempre generici o inventati.
 
-| File | Percorso | Contenuto | Uso in gioco |
-|---|---|---|---|
-| `AnimationSheet.png` | `assets/AnimationSheet.png` | Spritesheet protagonista — griglia 6 colonne × 5 righe, sprite stile pixel art minimal (teardrop shape), diversi stati e frame animazione | Personaggio protagonista in tutte le scene |
-| Kenney Roguelike Indoors | `assets/kenney_roguelike-indoors/` | Tilesheet 16×16 (mobili, pareti, pavimenti interni) | Sfondi interni appartamento, cucina |
-| Kenney Roguelike Modern City | `assets/kenney_roguelike-modern-city/` | Tiles città moderna (strade, edifici, marciapiedi) | Sfondo esterno banca (Scena 7) |
+| File | Contenuto | Uso in gioco |
+|---|---|---|
+| `protagonista.png` / `protagonista_dubbioso.png` | Protagonista, due mood | tutte le scene |
+| `sara.png` / `sara_dubbiosa.png` | Sara, due mood | dialoghi e consigli |
+| `casa.png` | Interno appartamento | sfondo di intro, budget, risparmi, riepilogo |
+| `supermercato.png` | Interno supermercato | scena 3 |
+| `cucina_rotta.png` / `cucina_riparata.png` | Cucina prima e dopo | scena 5 |
+| `phone.png` | Cornice di smartphone con schermo vuoto | scena 4: ci si sovrappongono le notifiche delle bollette |
+| `tonno.png`, `biscotti.png`, `succo.png` | Prodotti | scaffali del supermercato |
+| `wow.png` | Effetto di reazione | non ancora usato |
 
-I tilesheet indoor contengono: pavimenti in parquet/cemento, pareti, porte, finestre, mobili (divano, tavolo, frigorifero, letto, scaffali). Usali per comporre le scene di appartamento e cucina tramite CSS grid o canvas.
+I personaggi si usano **solo** tramite `CharacterSprite`, mai con un `<img>`
+sparso: il componente gestisce mood, dimensioni proporzionate e ombra a terra.
 
 #### `AnimationSheet.png` — Struttura spritesheet protagonista
 

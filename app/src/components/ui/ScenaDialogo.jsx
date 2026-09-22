@@ -21,9 +21,17 @@ export default function ScenaDialogo({
   children = null,
 }) {
   const parlaDestra = chiParla ? chiParla === 'destra' : Boolean(destra)
-  // La coda punta verso chi parla, quindi la nuvoletta sta dall'altro lato.
-  const latoBolla = parlaDestra ? 'left-3 sm:left-6' : 'right-3 sm:right-6'
   const verso = parlaDestra ? 'right' : 'left'
+  const dueInScena = Boolean(sinistra) && Boolean(destra)
+
+  // La nuvoletta vive nella banda che resta libera fra i personaggi. Le soglie
+  // corrispondono ai max-w di CharacterSprite (28% chi parla, 20% chi
+  // ascolta): così non si sovrappone mai a uno sprite, su nessun viewport.
+  const bandaParlante = 'calc(28% + 0.5rem)'
+  const bandaAscolto = dueInScena ? 'calc(20% + 0.5rem)' : '0.75rem'
+  const posizioneBolla = parlaDestra
+    ? { right: bandaParlante, left: bandaAscolto }
+    : { left: bandaParlante, right: bandaAscolto }
 
   // Chi parla è grande e in primo piano, chi ascolta è più piccolo e
   // arretrato: con due personaggi entrambi a piena altezza si toccherebbero,
@@ -54,9 +62,8 @@ export default function ScenaDialogo({
         />
       )}
 
-      {/* nuvoletta in alto dal lato opposto a chi parla: non copre mai la
-          faccia e riempie lo spazio che altrimenti resterebbe vuoto */}
-      <div className={`absolute top-4 ${latoBolla} z-30 w-[min(28rem,56%)]`}>
+      {/* nuvoletta in alto, nella banda libera fra i personaggi */}
+      <div className="absolute top-4 z-30" style={posizioneBolla}>
         <SpeechBubble
           speaker={speaker}
           verso={verso}

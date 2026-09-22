@@ -23,17 +23,18 @@ const PENSIEROSI = new Set([
   'triste',
 ])
 
-// Percentuali dell'altezza della scena, non rem: così il personaggio riempie
-// sempre la stessa porzione di schermo su qualsiasi viewport.
+// Vincolo su ENTRAMBE le dimensioni, in percentuale della scena.
 //
-// Le proporzioni sono tarate sugli sfondi, che sono interni di stanze: una
-// persona in piedi occupa circa due terzi dell'inquadratura. Sopra il 75%
-// sembra un gigante incollato davanti alla parete.
-const ALTEZZE = {
-  sm: 'h-[34%]',
-  md: 'h-[46%]',
-  lg: 'h-[58%]',
-  xl: 'h-[70%]',
+// Con il solo vincolo di altezza il personaggio diventava enorme sugli schermi
+// stretti: gli sprite hanno rapporto ~0,34, quindi uno alto il 70% della scena
+// è largo il 40% di un viewport verticale, e due si mangiavano tutta la
+// larghezza. Con max-w il limite che scatta è quello più stretto dei due, così
+// resta proporzionato ovunque e non viene mai tagliato.
+const MISURE = {
+  sm: 'max-h-[30%] max-w-[15%]',
+  md: 'max-h-[40%] max-w-[20%]',
+  lg: 'max-h-[50%] max-w-[25%]',
+  xl: 'max-h-[58%] max-w-[28%]',
 }
 
 export default function CharacterSprite({
@@ -62,7 +63,7 @@ export default function CharacterSprite({
         <img
           src={src}
           alt=""
-          className={`${ALTEZZE[size] ?? ALTEZZE.md} w-auto object-contain animate-bob relative`}
+          className={`${MISURE[size] ?? MISURE.md} w-auto h-auto object-contain animate-bob relative`}
           style={{ filter: 'drop-shadow(0 10px 18px rgba(0,0,0,0.5))' }}
         />
       </div>
