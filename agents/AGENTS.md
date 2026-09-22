@@ -1,7 +1,7 @@
 # AGENTS.md — Primo Stipendio · Hackathon Build Guide
 
 > Guida operativa per agenti AI che lavorano su questo progetto.
-> Leggi GAME_INFO.md per il design document completo prima di toccare qualsiasi scena.
+> In GAME_INFO.md leggi **solo la sezione della scena che stai toccando**, non il documento intero.
 
 ---
 
@@ -280,60 +280,40 @@ const PROTAGONIST_FRAMES = {
 
 ### ASSET MANCANTI — Lista e Fonti Gratuite (CC0 / CC-BY)
 
-#### PRIORITÀ ALTA — Bloccanti per il gameplay
+#### SFONDI — tutti generati con Copilot in `app/assets/bg/`
 
-| Asset | Descrizione | Fonte consigliata | URL |
-|---|---|---|---|
-| ~~`protagonist-sheet.png`~~ | ~~Spritesheet protagonista~~ | **DISPONIBILE** come `AnimationSheet.png` | `assets/AnimationSheet.png` |
-| `sara-sheet.png` | Spritesheet Sara: stati `sorridente`, `seria`, `sorpresa` (almeno 1 frame per stato). Deve avere stile coerente con `AnimationSheet.png` (stessa palette, stesso stile teardrop) | **Kenney "Toon Characters 1"** — variante colore/outfit diverso | `kenney.nl/assets/toon-characters-1` |
-| `bg-supermercato.png` | Interno supermercato con scaffali — scena intera 800×450px | Composizione da **Kenney "Roguelike Modern City"** + tiles custom | Già in `assets/` — componi con tiles |
-| `bg-cucina-frigo-rotto.png` | Cucina con frigo danneggiato — vapore animato via CSS | Composizione da **Kenney Roguelike Indoors** tiles | Già in `assets/` — componi con tiles |
+Un PNG per scena, 800×450, pixel art coerente con `AnimationSheet.png`.
 
-#### PRIORITÀ MEDIA — Migliorano l'esperienza visiva
+| File | Scena | Contenuto |
+|---|---|---|
+| `bg-appartamento-vuoto.png` | 0 | Appartamento vuoto, luce calda serale |
+| `bg-appartamento-tavolo.png` | 1 | Appartamento con tavolo e foglio di carta |
+| `bg-appartamento-divano.png` | 2 | Appartamento, personaggio sul divano |
+| `bg-supermercato.png` | 3 | Interno supermercato con scaffali |
+| `bg-appartamento-telefono.png` | 4 | Appartamento, notifiche telefono in primo piano |
+| `bg-cucina-frigo-rotto.png` | 5 | Cucina con frigo danneggiato (vapore via CSS) |
+| `bg-appartamento-sera.png` | 6 | Appartamento di sera, luce soffusa |
+| `bg-banca-esterno.png` | 7 | Esterno banca / palazzo urbano |
+| `bg-casa-obiettivo.png` | 8 | Casa con lucchetto, versione bloccata e sbloccata |
 
-| Asset | Descrizione | Fonte consigliata | URL |
-|---|---|---|---|
-| `bg-appartamento-vuoto.png` | Appartamento vuoto, luce calda serale | **Kenney Roguelike Indoors** tiles composti | Già in `assets/` |
-| `bg-appartamento-tavolo.png` | Appartamento con tavolo e foglio di carta | **Kenney Roguelike Indoors** tiles composti | Già in `assets/` |
-| `bg-appartamento-divano.png` | Appartamento, personaggio sul divano | **Kenney Roguelike Indoors** tiles composti | Già in `assets/` |
-| `bg-appartamento-telefono.png` | Appartamento, notifiche telefono in primo piano | **Kenney Roguelike Indoors** + overlay CSS | Già in `assets/` |
-| `bg-appartamento-sera.png` | Appartamento di sera, luce soffusa | **Kenney Roguelike Indoors** + filtro CSS `brightness(0.7)` | Già in `assets/` |
-| `bg-banca-esterno.png` | Esterno banca/palazzo urbano | **Kenney Roguelike Modern City** tiles | Già in `assets/` |
-| `bg-casa-obiettivo.png` | Casa con lucchetto (bloccata e sbloccata) | **Kenney Roguelike Modern City** tiles | Già in `assets/` |
+#### PERSONAGGI
 
-#### PRIORITÀ BASSA — UI e icone
+- **Protagonista:** `AnimationSheet.png`, già presente.
+- **Sara:** stesso file con `filter: hue-rotate(140deg)`. Nessuno spritesheet nuovo, nessun download.
 
-| Asset | Descrizione | Fonte consigliata | URL |
-|---|---|---|---|
-| `icon-bolletta.png` | Icona bolletta generica | **Kenney "Game Icons"** (CC0) | `kenney.nl/assets/game-icons` |
-| `icon-frigo-rotto.png` | Sprite frigo danneggiato (16×16 o 32×32) | Estratto da Kenney Roguelike Indoors tilesheet | Già in `assets/kenney_roguelike-indoors/` |
-| `badge-icons.png` | Spritesheet icone per badge concetti (6 icone) | **Kenney "Game Icons"** (CC0) | `kenney.nl/assets/game-icons` |
+#### ICONE — priorità bassa, tagliabili
+
+`icon-frigo-rotto.png` e le icone dei badge si ritagliano dai tilesheet rimasti via `background-position`. Se il tempo stringe, usa emoji: costano zero.
 
 ---
 
-### STRATEGIA ASSET — RACCOMANDAZIONE
+### STRATEGIA ASSET — DECISIONE PRESA (sprint 2h)
 
-**Per i background (tutti gli interni):** i tile Kenney Roguelike Indoors coprono tutto. Componi le scene con un `<canvas>` o con div/CSS-grid che piazzano i tile 16×16. Non serve scaricare nuovi pack per gli interni.
+**Non comporre gli sfondi dai tile 16×16 e non scrivere un tilemap renderer.** Le 1036 tile singole sono state rimosse dal repo: quel percorso costerebbe più del tempo totale disponibile.
 
-**Per i background esterni:** Kenney Roguelike Modern City copre banca e città.
+I due tilesheet rimasti (`roguelikeIndoor_transparent.png`, `tilemap_packed.png`) servono **solo** per ritagliare singole icone, mai per gli sfondi.
 
-**Per i personaggi (UNICO gap reale):** scarica **Kenney "Toon Characters 1"** (CC0, free). Contiene personaggi modulari con varianti di colore e stati emotivi. In alternativa usa il **Kenney Character Creator** online che genera sprite CC0 personalizzati.
-
-**Alternativa rapida senza download:** crea i personaggi come CSS puri (cerchi colorati con espressioni emoji SVG) per una demo funzionante, e aggiorna gli sprite in un secondo momento.
-
----
-
-### ALTRI PACK KENNEY CONSIGLIATI (tutti CC0)
-
-Scaricabili da `kenney.nl` — nessun account richiesto.
-
-| Pack | Perché utile |
-|---|---|
-| **Toon Characters 1** | Personaggi protagonist + Sara con stati emotivi |
-| **Game Icons** | Icone badge concetti, bollette, lucchetto casa |
-| **UI Pack** | Pulsanti, slider, card stilizzate pixel art |
-| **Micro Roguelike** | Sprite oggetti supermercato (cibo, prodotti) |
-| **Food Kit** | Icone cibo per scena supermercato |
+**Nessun pack nuovo da scaricare.** Ogni download è tempo tolto alle scene.
 
 ---
 
