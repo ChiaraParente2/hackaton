@@ -2,6 +2,12 @@
 
 > Guida operativa per agenti AI che lavorano su questo progetto.
 > In GAME_INFO.md leggi **solo la sezione della scena che stai toccando**, non il documento intero.
+>
+> Indice del setup agentico: [README.md](README.md) · budget token:
+> [TOKENOMICS.md](TOKENOMICS.md) · prompt pronti: [prompts/](prompts/) ·
+> skill eseguibili: [skills/](skills/)
+>
+> **Dopo ogni modifica ai soldi:** `node agents/skills/verifica-economia/verifica.mjs`
 
 ---
 
