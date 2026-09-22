@@ -68,5 +68,5 @@ Integra <FILE>.png nel gioco.
 | Oggetto / icona | lato 420 px | < 250 KB |
 
 Gli sprite generati arrivano a 1-1,5 MB l'uno. Otto file così sono 10 MB sulla
-prima schermata: in locale non si nota, su Vercel sì. La pipeline li porta a
+prima schermata: in locale non si nota, in produzione sì. La pipeline li porta a
 ~2,5 MB complessivi senza differenze visibili a schermo.
