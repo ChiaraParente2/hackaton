@@ -7,7 +7,7 @@ import { euro } from '../../utils/finance'
  * Il numero grande è il PATRIMONIO: spostare soldi nel salvadanaio non lo
  * muove, perché non hai perso nulla — scende solo quando spendi davvero.
  */
-export default function MoneyHUD({ patrimonio, conto, salvadanaio }) {
+export default function MoneyHUD({ patrimonio, conto, salvadanaio, scena, passo, totaleScene }) {
   const patrimonioAnim = useAnimatedNumber(patrimonio)
   const contoAnim = useAnimatedNumber(conto)
   const salvadanaioAnim = useAnimatedNumber(salvadanaio)
@@ -70,7 +70,7 @@ export default function MoneyHUD({ patrimonio, conto, salvadanaio }) {
         </div>
 
         {/* Come sono ripartiti */}
-        <div className="flex gap-1.5 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
           <Pill
             icona="👛"
             label="Conto"
@@ -78,6 +78,14 @@ export default function MoneyHUD({ patrimonio, conto, salvadanaio }) {
             colore={conto < 0 ? 'text-red-400' : 'text-slate-200'}
           />
           <Pill icona="🏦" label="Da parte" valore={salvadanaioAnim} colore="text-blue-300" />
+          {scena && (
+            <div className="bg-slate-900/70 border border-slate-700 rounded-lg px-2 py-1 text-center">
+              <div className="text-[9px] font-mono text-slate-500 leading-none">
+                {passo}/{totaleScene}
+              </div>
+              <div className="font-mono text-[11px] text-slate-300 leading-tight mt-0.5">{scena}</div>
+            </div>
+          )}
         </div>
       </div>
     </div>

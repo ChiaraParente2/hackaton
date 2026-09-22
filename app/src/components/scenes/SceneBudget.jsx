@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import DialogBox from '../ui/DialogBox'
 import CharacterSprite from '../ui/CharacterSprite'
+import SpeechBubble from '../ui/SpeechBubble'
 import BudgetPieChart from '../charts/BudgetPieChart'
 import {
   ALLOGGI,
@@ -14,6 +14,38 @@ import {
 
 // Obiettivo della regola 50/30/20, in euro.
 const TARGET_RISPARMIO = Math.round(STIPENDIO * 0.2)
+
+// Le tre strategie, ognuna col suo consiglio. Non sono scorciatoie estetiche:
+// servono a far capire in un tap cosa comporta ciascun estremo.
+const PRESETS = [
+  {
+    id: 'cicala',
+    emoji: '🦗',
+    nome: 'Cicala',
+    valore: () => 0,
+    stileAttivo: 'border-red-400 bg-red-500/15',
+    testoAttivo: 'text-red-300',
+    tip: 'Zero da parte: ogni euro se ne va subito. Funziona finché non succede niente — e prima o poi qualcosa succede sempre.',
+  },
+  {
+    id: 'regola',
+    emoji: '🎯',
+    nome: 'Regola 20%',
+    valore: (disponibile) => Math.min(TARGET_RISPARMIO, disponibile),
+    stileAttivo: 'border-green-400 bg-green-500/15',
+    testoAttivo: 'text-green-300',
+    tip: 'Un quinto dello stipendio al futuro: abbastanza per costruire qualcosa, abbastanza poco da vivere lo stesso. È lo standard consigliato.',
+  },
+  {
+    id: 'formica',
+    emoji: '🐜',
+    nome: 'Formica',
+    valore: (disponibile) => disponibile,
+    stileAttivo: 'border-blue-400 bg-blue-500/15',
+    testoAttivo: 'text-blue-300',
+    tip: 'Massimo risparmio. Costruisci in fretta, ma lasciarti zero per vivere rende il mese insostenibile: la maggior parte molla dopo poche settimane.',
+  },
+]
 
 export default function SceneBudget({ gameState, dispatch }) {
   const [step, setStep] = useState(0)
@@ -52,13 +84,16 @@ export default function SceneBudget({ gameState, dispatch }) {
   if (step === 0) {
     return (
       <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-slate-900/30" />
-        <CharacterSprite character="sara" state="sorridente" position="right" />
-        <DialogBox
-          speaker="Sara"
-          text="Prima regola: lo stipendio si divide PRIMA di spenderlo. Il metodo classico è 50/30/20 — metà per le spese necessarie, un terzo per la tua vita, un quinto per il futuro. Ma prima devi decidere dove vivi: è la voce che pesa di più."
-          onNext={() => setStep(1)}
-        />
+        <div className="absolute inset-0 bg-slate-900/35" />
+        <CharacterSprite character="sara" state="sorridente" position="right" size="xl" />
+        <div className="absolute bottom-6 left-4 right-4 sm:right-64 z-20">
+          <SpeechBubble
+            speaker="Sara"
+            verso="right"
+            text="Prima regola: lo stipendio si divide PRIMA di spenderlo. Il metodo classico è 50/30/20 — metà per le spese necessarie, un terzo per la tua vita, un quinto per il futuro. Ma prima devi decidere dove vivi: è la voce che pesa di più."
+            onNext={() => setStep(1)}
+          />
+        </div>
       </div>
     )
   }
@@ -175,6 +210,11 @@ export default function SceneBudget({ gameState, dispatch }) {
             ? { emoji: '😄', testo: `${pctRisparmio}% da parte: centrato l'obiettivo della regola 50/30/20!`, colore: 'text-green-300' }
             : { emoji: '😮', testo: `${pctRisparmio}% è tantissimo. Occhio a lasciarti abbastanza per vivere.`, colore: 'text-blue-300' }
 
+  // Se lo slider è fermo su una delle tre strategie Sara dà il consiglio
+  // dedicato, altrimenti commenta la posizione libera.
+  const presetAttivo = PRESETS.find((p) => p.valore(disponibile) === risparmioOk)
+  const consiglio = presetAttivo ? presetAttivo.tip : verdetto.testo
+
   return (
     <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center overflow-y-auto">
       <div className="absolute inset-0 bg-slate-900/70" />
@@ -241,26 +281,37 @@ export default function SceneBudget({ gameState, dispatch }) {
             <span>tutto il disponibile · {euro(disponibile)}</span>
           </div>
 
-          <div className="flex gap-2 mt-3">
-            <PresetBtn
-              label="🦗 Cicala"
-              hint="0%"
-              attivo={risparmioOk === 0}
-              onClick={() => setRisparmio(0)}
-            />
-            <PresetBtn
-              label="🎯 Regola 20%"
-              hint={euro(Math.min(TARGET_RISPARMIO, disponibile))}
-              attivo={risparmioOk === Math.min(TARGET_RISPARMIO, disponibile)}
-              onClick={() => setRisparmio(Math.min(TARGET_RISPARMIO, disponibile))}
-            />
-            <PresetBtn
-              label="🐜 Formica"
-              hint="max"
-              attivo={risparmioOk === disponibile}
-              onClick={() => setRisparmio(disponibile)}
-            />
-          </div>
+        </div>
+
+        {/* Le tre strategie, in grande: un tap per capire cosa comporta ognuna */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          {PRESETS.map((p, i) => {
+            const valore = p.valore(disponibile)
+            const attivo = risparmioOk === valore
+            return (
+              <button
+                key={p.id}
+                onClick={() => setRisparmio(valore)}
+                style={{ animationDelay: `${i * 70}ms` }}
+                className={`animate-pop-in rounded-xl border-2 p-3 text-center transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 ${
+                  attivo ? p.stileAttivo : 'border-slate-700 bg-slate-800/80 hover:border-slate-500'
+                }`}
+              >
+                <div className={`text-4xl mb-1 transition-transform ${attivo ? 'scale-110' : ''}`}>
+                  {p.emoji}
+                </div>
+                <div className="font-mono text-xs text-slate-100">{p.nome}</div>
+                <div
+                  className={`font-mono text-sm font-bold mt-1 ${attivo ? p.testoAttivo : 'text-slate-500'}`}
+                >
+                  {euro(valore)}
+                </div>
+                <div className="font-mono text-[10px] text-slate-500 mt-0.5">
+                  {pct(valore)}% stipendio
+                </div>
+              </button>
+            )
+          })}
         </div>
 
         {/* Confronto con l'obiettivo */}
@@ -284,9 +335,16 @@ export default function SceneBudget({ gameState, dispatch }) {
           />
         </div>
 
-        <div className="bg-slate-700/80 rounded-lg p-3 mb-4 flex gap-2 items-start">
-          <span className="text-xl shrink-0">{verdetto.emoji}</span>
-          <p className={`text-xs font-mono ${verdetto.colore}`}>{verdetto.testo}</p>
+        {/* Il consiglio di Sara: cambia con la strategia scelta */}
+        <div className="flex items-end gap-1 mb-4">
+          <img
+            src={pctRisparmio < 10 ? '/assets/sara_dubbiosa.png' : '/assets/sara.png'}
+            alt=""
+            className="h-28 w-auto shrink-0 drop-shadow-xl"
+          />
+          <div className="flex-1 min-w-0 mb-5">
+            <SpeechBubble speaker="Sara" text={consiglio} verso="left" />
+          </div>
         </div>
 
         {/* Sempre abilitato: il totale non può che fare 1.400€ */}
@@ -301,18 +359,3 @@ export default function SceneBudget({ gameState, dispatch }) {
   )
 }
 
-function PresetBtn({ label, hint, attivo, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex-1 rounded-lg py-1.5 px-1 border transition-all ${
-        attivo
-          ? 'bg-green-500/20 border-green-400 text-green-300'
-          : 'bg-slate-700/50 border-slate-600 text-slate-300 hover:border-slate-400'
-      }`}
-    >
-      <div className="font-mono text-xs">{label}</div>
-      <div className="font-mono text-[10px] text-slate-500">{hint}</div>
-    </button>
-  )
-}
