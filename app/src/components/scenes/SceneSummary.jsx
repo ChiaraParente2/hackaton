@@ -1,13 +1,23 @@
 import { useState } from 'react'
 import CharacterSprite from '../ui/CharacterSprite'
 import ConceptBadge from '../ui/ConceptBadge'
-import { CONCETTI, calcolaSaldo, calcolaPunteggio, vociEstrattoConto, euro } from '../../utils/finance'
+import {
+  CONCETTI,
+  contoCorrente,
+  salvadanaio,
+  patrimonio,
+  calcolaPunteggio,
+  vociEstrattoConto,
+  euro,
+} from '../../utils/finance'
 
 export default function SceneSummary({ gameState, dispatch }) {
-  // Voci e saldo escono dalla stessa funzione: l'estratto conto quadra per
+  // Voci e totale escono dalla stessa funzione: il riepilogo quadra per
   // costruzione, non per coincidenza.
   const voci = vociEstrattoConto(gameState)
-  const saldo = calcolaSaldo(gameState)
+  const conto = contoCorrente(gameState)
+  const daParte = salvadanaio(gameState)
+  const totale = patrimonio(gameState)
   const punteggio = calcolaPunteggio(gameState)
 
   const saraState = punteggio >= 70 ? 'felice' : punteggio >= 40 ? 'sorridente' : 'seria'
@@ -43,8 +53,16 @@ export default function SceneSummary({ gameState, dispatch }) {
                 </div>
               ))}
               <div className="border-t border-slate-600 pt-1 flex justify-between">
-                <span className="text-slate-200 text-xs font-mono font-bold">Saldo a fine mese</span>
-                <span className={`text-xs font-mono font-bold ${saldo >= 0 ? 'text-green-300' : 'text-red-300'}`}>{euro(saldo)}</span>
+                <span className="text-slate-200 text-xs font-mono font-bold">Ti resta in tutto</span>
+                <span className={`text-xs font-mono font-bold ${totale >= 0 ? 'text-green-300' : 'text-red-300'}`}>{euro(totale)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 text-[10px] font-mono pl-2">👛 sul conto</span>
+                <span className={`text-[10px] font-mono ${conto >= 0 ? 'text-slate-300' : 'text-red-400'}`}>{euro(conto)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 text-[10px] font-mono pl-2">🏦 messi da parte</span>
+                <span className="text-[10px] font-mono text-blue-300">{euro(daParte)}</span>
               </div>
             </div>
           </div>

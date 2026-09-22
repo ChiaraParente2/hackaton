@@ -84,36 +84,64 @@ export default function SceneBudget({ gameState, dispatch }) {
                 <button
                   key={a.id}
                   onClick={() => scegliCasa(a.id)}
-                  className="w-full text-left p-3 rounded-xl border bg-slate-800/85 border-slate-600 hover:border-yellow-400 hover:bg-slate-700/85 transition-all"
+                  className="group w-full text-left p-3 rounded-xl border-2 bg-slate-800/90 border-slate-700 shadow-lg hover:border-yellow-400 hover:bg-slate-700/90 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-150"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl shrink-0">{a.emoji}</span>
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`shrink-0 w-14 h-14 rounded-xl flex items-center justify-center text-3xl border-2 transition-transform group-hover:scale-110 ${
+                        pesante
+                          ? 'bg-red-500/10 border-red-500/40'
+                          : 'bg-green-500/10 border-green-500/30'
+                      }`}
+                    >
+                      {a.emoji}
+                    </div>
+
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-baseline gap-2">
                         <span className="font-mono text-slate-100 text-sm">{a.nome}</span>
-                        <span className="font-mono text-red-400 text-sm font-bold shrink-0">
-                          {euro(a.affitto)}/mese
+                        <span className="font-mono text-red-400 text-base font-bold shrink-0">
+                          {euro(a.affitto)}
                         </span>
                       </div>
-                      <p className="text-slate-400 text-xs mt-0.5">{a.descrizione}</p>
 
-                      {/* barretta: quanto dello stipendio se ne va in spese fisse */}
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">
+                          {a.tag}
+                        </span>
+                        <span className="flex gap-0.5 items-center">
+                          {[1, 2, 3, 4].map((i) => (
+                            <span
+                              key={i}
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                i <= a.privacy ? 'bg-purple-400' : 'bg-slate-600'
+                              }`}
+                            />
+                          ))}
+                          <span className="text-[9px] font-mono text-slate-500 ml-1">privacy</span>
+                        </span>
+                      </div>
+
+                      <p className="text-slate-400 text-xs mt-1.5 leading-snug">{a.descrizione}</p>
+
+                      {/* quanto dello stipendio se ne va in spese fisse */}
                       <div className="flex items-center gap-2 mt-2">
-                        <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${pesante ? 'bg-red-500' : 'bg-orange-400'}`}
                             style={{ width: `${quota}%` }}
                           />
                         </div>
                         <span
-                          className={`font-mono text-xs shrink-0 ${pesante ? 'text-red-400' : 'text-slate-400'}`}
+                          className={`font-mono text-[10px] shrink-0 ${pesante ? 'text-red-400' : 'text-slate-400'}`}
                         >
                           {quota}% fisse
                         </span>
                       </div>
-                      <p className="text-xs font-mono mt-1 text-slate-500">
-                        ti restano <span className="text-green-400">{euro(resta)}</span> per vivere e
-                        risparmiare
+
+                      <p className="text-xs font-mono mt-1.5 text-slate-500">
+                        ti restano{' '}
+                        <span className="text-green-400 font-bold text-sm">{euro(resta)}</span>
                         {pesante && <span className="text-red-400"> · oltre metà stipendio ⚠️</span>}
                       </p>
                     </div>
@@ -184,11 +212,14 @@ export default function SceneBudget({ gameState, dispatch }) {
             )}
           </div>
         </div>
-        <div className="flex justify-between text-xs font-mono mb-4">
-          <span className="text-red-400">Fisse {euro(speseFisse)}</span>
-          <span className="text-yellow-400">Vita {euro(spesePersonali)}</span>
-          <span className="text-green-400">Futuro {euro(risparmioOk)}</span>
+        <div className="flex justify-between text-xs font-mono">
+          <span className="text-red-400">🏠 Fisse {euro(speseFisse)}</span>
+          <span className="text-yellow-400">🍕 Vita {euro(spesePersonali)}</span>
+          <span className="text-green-400">🌱 Futuro {euro(risparmioOk)}</span>
         </div>
+        <p className="text-slate-500 text-[10px] font-mono text-center mt-1 mb-4">
+          spesa e bollette escono dalla <span className="text-yellow-500">vita quotidiana</span>
+        </p>
 
         {/* L'unica leva */}
         <div className="bg-slate-800/85 rounded-xl p-4 mb-3 border border-slate-600">

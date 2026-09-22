@@ -13,20 +13,26 @@ export const ALLOGGI = [
     nome: 'Stanza in doppia',
     emoji: '🛏️',
     affitto: 250,
-    descrizione: 'Condivisa con un coinquilino. Poca privacy, tanto margine.',
+    privacy: 1,
+    tag: '💰 massimo margine',
+    descrizione: 'Dividi la camera con un altro. Poca privacy, tantissimo margine.',
   },
   {
     id: 'singola',
     nome: 'Stanza singola',
     emoji: '🚪',
     affitto: 400,
-    descrizione: 'Camera tua in appartamento condiviso. Il compromesso classico.',
+    privacy: 2,
+    tag: '⚖️ il compromesso',
+    descrizione: 'Camera tua in appartamento condiviso. La scelta più comune.',
   },
   {
     id: 'monolocale',
     nome: 'Monolocale',
     emoji: '🏠',
     affitto: 550,
+    privacy: 3,
+    tag: '🎯 esattamente il 50%',
     descrizione: 'Tutto tuo, ma piccolo. Nessun coinquilino da sopportare.',
   },
   {
@@ -34,7 +40,9 @@ export const ALLOGGI = [
     nome: 'Bilocale',
     emoji: '🏡',
     affitto: 750,
-    descrizione: 'Spazio vero. Con 1.400€ netti però ti mangia mezzo stipendio.',
+    privacy: 4,
+    tag: '⚠️ mezzo stipendio',
+    descrizione: 'Spazio vero, camera e soggiorno separati. Si paga, però.',
   },
 ]
 
@@ -129,38 +137,55 @@ export function totaleBollette(bollette) {
   return bollette.luce + bollette.gas + bollette.internet
 }
 
-/**
- * Unica verità sul saldo di fine mese.
- * Il saldo NON vive nello stato: si ricava sempre da qui, così l'estratto
- * conto non può mostrare voci che non incidono sul totale.
- */
-export function calcolaSaldo(s) {
+// ─── I tuoi soldi ───────────────────────────────────────────────────────────
+// Tre grandezze distinte, per non confondere "spendere" con "mettere da parte":
+//
+//   conto corrente  quello che ti resta libero questo mese
+//   salvadanaio     fondo emergenza (al netto di quanto hai dovuto usarne)
+//                   + investimento
+//   patrimonio      conto + salvadanaio = il vero punteggio
+//
+// Spostare soldi nel salvadanaio NON abbassa il patrimonio: lo abbassa solo
+// spendere. Prima risparmiare faceva scendere il contatore, premiando la
+// scelta sbagliata.
+
+/** Quanto hai effettivamente da parte: il fondo può essere stato intaccato. */
+export function salvadanaio(s) {
+  return Math.max(0, s.fondoEmergenza - s.imprevistoDaFondo) + s.fondoInvestimento
+}
+
+/** Conto corrente: i soldi liberi rimasti questo mese. */
+export function contoCorrente(s) {
   return (
     s.stipendio -
     s.allocazioni.speseFisse -
+    s.fondoEmergenza -
+    s.fondoInvestimento -
     s.spesaSupermercato -
     totaleBollette(s.bollette) -
-    s.costoImprevisto -
-    s.fondoEmergenza -
-    s.fondoInvestimento
+    s.imprevistoDaConto
   )
 }
 
-/** Le voci dell'estratto conto, nello stesso ordine in cui compongono il saldo. */
+/** Patrimonio = conto + salvadanaio. Scende solo quando spendi davvero. */
+export function patrimonio(s) {
+  return contoCorrente(s) + salvadanaio(s)
+}
+
+/** Le voci del riepilogo, nello stesso ordine in cui compongono il patrimonio. */
 export function vociEstrattoConto(s) {
   const casa = alloggioDi(s.alloggio)
   return [
     { label: 'Stipendio netto', valore: s.stipendio, tipo: 'entrata' },
     {
-      label: casa ? `Affitto (${casa.nome.toLowerCase()})` : 'Spese fisse',
+      label: casa ? `Affitto e fisse (${casa.nome.toLowerCase()})` : 'Spese fisse',
       valore: -s.allocazioni.speseFisse,
       tipo: 'uscita',
     },
     { label: 'Spesa supermercato', valore: -s.spesaSupermercato, tipo: 'uscita' },
     { label: 'Bollette', valore: -totaleBollette(s.bollette), tipo: 'uscita' },
-    { label: 'Imprevisto', valore: -s.costoImprevisto, tipo: 'uscita' },
-    { label: 'Fondo emergenza', valore: -s.fondoEmergenza, tipo: 'risparmio' },
-    { label: 'Investimento', valore: -s.fondoInvestimento, tipo: 'risparmio' },
+    { label: 'Imprevisto — dal fondo', valore: -s.imprevistoDaFondo, tipo: 'uscita' },
+    { label: 'Imprevisto — dal conto', valore: -s.imprevistoDaConto, tipo: 'uscita' },
   ].filter((v) => v.valore !== 0)
 }
 
@@ -171,14 +196,19 @@ export function vociEstrattoConto(s) {
  * ripartizione scelta dal giocatore non spostava nulla.
  */
 export function calcolaPunteggio(s) {
-  const saldo = calcolaSaldo(s)
+  const conto = contoCorrente(s)
   const mesi = mesiPerObiettivo(s.fondoEmergenza, obiettivoFondo(s))
   let p = 0
-  if (Number.isFinite(mesi)) p += Math.round(40 * Math.min(1, 12 / mesi))
-  if (s.fondoInvestimento > 0) p += 25
+  // 35 — quanto in fretta costruisci la rete di sicurezza
+  if (Number.isFinite(mesi)) p += Math.round(35 * Math.min(1, 12 / mesi))
+  // 25 — investire vale, ma vale molto meno se non hai prima il fondo:
+  // prima la rete, poi la crescita.
+  if (s.fondoInvestimento > 0) p += s.fondoEmergenza > 0 ? 25 : 10
   if (s.tipoInvestimento === 'etf') p += 5 // diversificare vale qualcosa
-  if (saldo >= 0) p += 20
-  if (s.imprevistoAffrontato && saldo >= 0) p += 10
+  // 20 — chiudere il mese senza andare in rosso
+  if (conto >= 0) p += 20
+  // 15 — l'imprevisto assorbito dal fondo, senza intaccare il conto
+  if (s.imprevistoAffrontato && s.imprevistoDaConto === 0) p += 15
   return Math.max(0, Math.min(100, p))
 }
 

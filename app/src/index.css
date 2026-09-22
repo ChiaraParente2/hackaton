@@ -16,5 +16,28 @@
 }
 .animate-fade-in { animation: fadeInUp 0.3s ease-out forwards; }
 
+/* Bolla "-220 €" che sale e svanisce quando il patrimonio cambia */
+@keyframes floatUp {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.9); }
+  15%  { opacity: 1; transform: translateY(0) scale(1.05); }
+  30%  { transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-26px) scale(1); }
+}
+.animate-float-up { animation: floatUp 1.4s ease-out forwards; }
+
+/* Pulsazione del contatore quando i soldi si muovono */
+@keyframes pulseMoney {
+  0%, 100% { transform: scale(1); }
+  35%      { transform: scale(1.14); }
+}
+.animate-pulse-money { animation: pulseMoney 0.6s ease-out; }
+
+/* Riempimento delle barre del budget */
+@keyframes growIn {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.animate-grow-in { animation: growIn 0.5s ease-out forwards; transform-origin: left; }
+
 * { box-sizing: border-box; }
 body { margin: 0; background: #0f172a; }
