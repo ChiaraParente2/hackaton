@@ -3,10 +3,10 @@ import CharacterSprite from '../ui/CharacterSprite'
 import CompoundInterestChart from '../charts/CompoundInterestChart'
 import {
   INVESTIMENTI,
-  OBIETTIVO_FONDO,
   MESI_OBIETTIVO,
-  SPESE_MENSILI,
   mesiPerObiettivo,
+  obiettivoFondo,
+  speseMensiliStimate,
   proiezione,
   euro,
 } from '../../utils/finance'
@@ -14,7 +14,9 @@ import {
 const ANNI_PROIEZIONE = 10
 
 export default function SceneSavings({ gameState, dispatch }) {
-  const maxRisparmio = gameState.allocazioni.risparmio || 280
+  // `?? ` e non `|| `: un risparmio di 0 è una scelta valida del giocatore,
+  // non un valore mancante da rimpiazzare col default.
+  const maxRisparmio = gameState.allocazioni.risparmio ?? 280
   const [fondoEmergenza, setFondoEmergenza] = useState(Math.min(180, maxRisparmio))
   const [showChart, setShowChart] = useState(false)
   const [tipoInvestimento, setTipoInvestimento] = useState(null)
@@ -25,7 +27,9 @@ export default function SceneSavings({ gameState, dispatch }) {
   // Lo slider è un VERSAMENTO MENSILE, non un fondo già accumulato: la domanda
   // sensata è "in quanti mesi arrivo a coprire 3 mesi di spese", non "quanti
   // mesi copro adesso" — che con un tetto di ~280€ darebbe sempre 0,2.
-  const mesiAllObiettivo = mesiPerObiettivo(fondoEmergenza)
+  const speseMensili = speseMensiliStimate(gameState)
+  const obiettivo = obiettivoFondo(gameState)
+  const mesiAllObiettivo = mesiPerObiettivo(fondoEmergenza, obiettivo)
 
   const investScelto = INVESTIMENTI.find(i => i.id === tipoInvestimento)
   const proiezione10 = investScelto
@@ -77,14 +81,14 @@ export default function SceneSavings({ gameState, dispatch }) {
             <span className="text-blue-400 font-mono text-sm font-bold">{euro(fondoEmergenza)}</span>
           </div>
           <input
-            type="range" min={50} max={maxRisparmio} step={10} value={fondoEmergenza}
+            type="range" min={0} max={maxRisparmio} step={10} value={fondoEmergenza}
             onChange={e => setFondoEmergenza(Number(e.target.value))}
             className="w-full h-2 accent-blue-500 cursor-pointer mb-2"
           />
           <p className="text-slate-400 text-xs font-mono leading-relaxed">
-            Obiettivo: <span className="text-white">{MESI_OBIETTIVO} mesi di spese</span> ={' '}
-            <span className="text-white">{euro(OBIETTIVO_FONDO)}</span>
-            <span className="text-slate-500"> ({euro(SPESE_MENSILI)}/mese)</span>
+            Obiettivo: <span className="text-white">{MESI_OBIETTIVO} mesi delle tue spese</span> ={' '}
+            <span className="text-white">{euro(obiettivo)}</span>
+            <span className="text-slate-500"> ({euro(speseMensili)}/mese)</span>
             <br />
             {!Number.isFinite(mesiAllObiettivo) ? (
               <span className="text-orange-300">Senza versamenti non lo raggiungi mai ⚠️</span>

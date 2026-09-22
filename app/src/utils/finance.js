@@ -4,13 +4,68 @@
 
 export const STIPENDIO = 1400
 
-// Spese mensili tipiche di chi vive da solo con 1.400€ netti.
-// Il fondo emergenza si misura in mesi di SPESE, mai in mesi di stipendio.
-export const SPESE_MENSILI = 950
+// ─── Casa ───────────────────────────────────────────────────────────────────
+// L'affitto è la voce che pesa di più su un primo stipendio: sceglierlo è già
+// mezzo budget. Una volta scelto è una spesa FISSA e non si tocca più.
+export const ALLOGGI = [
+  {
+    id: 'doppia',
+    nome: 'Stanza in doppia',
+    emoji: '🛏️',
+    affitto: 250,
+    descrizione: 'Condivisa con un coinquilino. Poca privacy, tanto margine.',
+  },
+  {
+    id: 'singola',
+    nome: 'Stanza singola',
+    emoji: '🚪',
+    affitto: 400,
+    descrizione: 'Camera tua in appartamento condiviso. Il compromesso classico.',
+  },
+  {
+    id: 'monolocale',
+    nome: 'Monolocale',
+    emoji: '🏠',
+    affitto: 550,
+    descrizione: 'Tutto tuo, ma piccolo. Nessun coinquilino da sopportare.',
+  },
+  {
+    id: 'bilocale',
+    nome: 'Bilocale',
+    emoji: '🏡',
+    affitto: 750,
+    descrizione: 'Spazio vero. Con 1.400€ netti però ti mangia mezzo stipendio.',
+  },
+]
 
+// Trasporti, telefono, assicurazione: fisse qualunque casa tu scelga.
+export const ALTRE_SPESE_FISSE = 150
+
+export function alloggioDi(id) {
+  return ALLOGGI.find((a) => a.id === id) ?? null
+}
+
+export function speseFisseDi(id) {
+  const a = alloggioDi(id)
+  return a ? a.affitto + ALTRE_SPESE_FISSE : 0
+}
+
+// ─── Fondo emergenza ────────────────────────────────────────────────────────
+// Spesa alimentare e bollette tipiche: la parte che non dipende dalla casa.
+export const SPESE_VARIABILI_TIPICHE = 350
 export const MESI_OBIETTIVO = 3
-export const OBIETTIVO_FONDO = SPESE_MENSILI * MESI_OBIETTIVO // 2.850€
 
+/** Spese mensili totali stimate, in base alla casa scelta. */
+export function speseMensiliStimate(s) {
+  return (s.allocazioni?.speseFisse || 0) + SPESE_VARIABILI_TIPICHE
+}
+
+/** Obiettivo fondo emergenza: 3 mesi delle TUE spese, non di una media. */
+export function obiettivoFondo(s) {
+  return MESI_OBIETTIVO * speseMensiliStimate(s)
+}
+
+// ─── Investimenti ───────────────────────────────────────────────────────────
 export const INVESTIMENTI = [
   {
     id: 'liquidita',
@@ -35,6 +90,7 @@ export const INVESTIMENTI = [
   },
 ]
 
+// ─── Formattazione e calcoli ────────────────────────────────────────────────
 const fmtEuro = new Intl.NumberFormat('it-IT', {
   style: 'currency',
   currency: 'EUR',
@@ -43,6 +99,11 @@ const fmtEuro = new Intl.NumberFormat('it-IT', {
 
 export function euro(n) {
   return fmtEuro.format(Math.round(Number(n) || 0))
+}
+
+/** Quota sullo stipendio, arrotondata: è l'unità con cui si ragiona di budget. */
+export function pct(valore, totale = STIPENDIO) {
+  return totale > 0 ? Math.round((valore / totale) * 100) : 0
 }
 
 /** Valore futuro di un capitale iniziale più versamenti mensili costanti. */
@@ -55,12 +116,12 @@ export function proiezione(capitaleIniziale, versamentoMensile, anni, tassoAnnuo
 }
 
 /** Mesi di spese coperti da un fondo già accumulato. */
-export function mesiCoperti(fondoTotale, spese = SPESE_MENSILI) {
-  return spese > 0 ? fondoTotale / spese : 0
+export function mesiCoperti(fondoTotale, speseMensili) {
+  return speseMensili > 0 ? fondoTotale / speseMensili : 0
 }
 
 /** Mesi necessari a raggiungere l'obiettivo versando `mensile` ogni mese. */
-export function mesiPerObiettivo(mensile, obiettivo = OBIETTIVO_FONDO) {
+export function mesiPerObiettivo(mensile, obiettivo) {
   return mensile > 0 ? Math.ceil(obiettivo / mensile) : Infinity
 }
 
@@ -87,9 +148,14 @@ export function calcolaSaldo(s) {
 
 /** Le voci dell'estratto conto, nello stesso ordine in cui compongono il saldo. */
 export function vociEstrattoConto(s) {
+  const casa = alloggioDi(s.alloggio)
   return [
     { label: 'Stipendio netto', valore: s.stipendio, tipo: 'entrata' },
-    { label: 'Spese fisse', valore: -s.allocazioni.speseFisse, tipo: 'uscita' },
+    {
+      label: casa ? `Affitto (${casa.nome.toLowerCase()})` : 'Spese fisse',
+      valore: -s.allocazioni.speseFisse,
+      tipo: 'uscita',
+    },
     { label: 'Spesa supermercato', valore: -s.spesaSupermercato, tipo: 'uscita' },
     { label: 'Bollette', valore: -totaleBollette(s.bollette), tipo: 'uscita' },
     { label: 'Imprevisto', valore: -s.costoImprevisto, tipo: 'uscita' },
@@ -106,7 +172,7 @@ export function vociEstrattoConto(s) {
  */
 export function calcolaPunteggio(s) {
   const saldo = calcolaSaldo(s)
-  const mesi = mesiPerObiettivo(s.fondoEmergenza)
+  const mesi = mesiPerObiettivo(s.fondoEmergenza, obiettivoFondo(s))
   let p = 0
   if (Number.isFinite(mesi)) p += Math.round(40 * Math.min(1, 12 / mesi))
   if (s.fondoInvestimento > 0) p += 25

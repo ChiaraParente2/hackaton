@@ -1,11 +1,12 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { euro, pct } from '../../utils/finance'
 
 export default function BudgetPieChart({ speseFisse, spesePersonali, risparmio }) {
   const data = [
     { name: 'Spese fisse', value: speseFisse, fill: '#ef4444' },
     { name: 'Vita personale', value: spesePersonali, fill: '#facc15' },
     { name: 'Futuro', value: risparmio, fill: '#22c55e' },
-  ]
+  ].filter((d) => d.value > 0)
 
   return (
     <ResponsiveContainer width="100%" height={200}>
@@ -24,7 +25,7 @@ export default function BudgetPieChart({ speseFisse, spesePersonali, risparmio }
           ))}
         </Pie>
         <Tooltip
-          formatter={(v) => `${v}€`}
+          formatter={(v, name) => [`${euro(v)} · ${pct(v)}%`, name]}
           contentStyle={{ background: '#1e293b', border: '1px solid #475569', borderRadius: 8, color: '#f1f5f9', fontSize: 12 }}
         />
         <Legend wrapperStyle={{ fontSize: 11, color: '#94a3b8' }} />

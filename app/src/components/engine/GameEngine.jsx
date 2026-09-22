@@ -15,6 +15,7 @@ import { STIPENDIO, calcolaSaldo, euro } from '../../utils/finance'
 const initialState = {
   currentScene: 0,
   stipendio: STIPENDIO,
+  alloggio: null, // scelto nella scena 1: determina le spese fisse
   allocazioni: { speseFisse: 0, spesePersonali: 0, risparmio: 0 },
   fondoEmergenza: 0,
   fondoInvestimento: 0,
@@ -33,8 +34,8 @@ function gameReducer(state, action) {
       return { ...state, currentScene: state.currentScene + 1 }
     case 'GO_TO_SCENE':
       return { ...state, currentScene: action.payload }
-    case 'SET_ALLOCAZIONI':
-      return { ...state, allocazioni: action.payload }
+    case 'SET_BUDGET':
+      return { ...state, alloggio: action.payload.alloggio, allocazioni: action.payload.allocazioni }
     case 'SET_SAVINGS':
       return { ...state, ...action.payload }
     case 'SET_SPESA':
