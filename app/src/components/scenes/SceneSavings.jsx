@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import CharacterSprite from '../ui/CharacterSprite'
+import ScenaDialogo from '../ui/ScenaDialogo'
 import SpeechBubble from '../ui/SpeechBubble'
 import Termine from '../ui/Termine'
 import CompoundInterestChart from '../charts/CompoundInterestChart'
@@ -67,37 +67,31 @@ export default function SceneSavings({ gameState, dispatch }) {
   // ── Step 0 — Sara spiega la differenza ───────────────────────────────────
   if (step === 0) {
     return (
-      <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-slate-900/40" />
-        <CharacterSprite character="sara" state="seria" position="right" size="xl" />
-        <div className="absolute bottom-6 left-4 right-4 sm:right-64 z-20">
-          <SpeechBubble
-            speaker="Sara"
-            verso="right"
-            onNext={() => setStep(1)}
-            text="Attenzione: risparmiare e investire sono due cose diverse. Il fondo emergenza è una rete, deve stare fermo e disponibile subito. L'investimento fa crescere i soldi, ma può scendere proprio quando ti servono. Due salvadanai separati — partiamo dalla rete."
-          />
-        </div>
-      </div>
+      <ScenaDialogo
+        sfondo="/assets/casa.png"
+        destra={{ character: 'sara', state: 'seria' }}
+        sinistra={{ character: 'protagonista', state: 'neutro' }}
+        chiParla="destra"
+        speaker="Sara"
+        onNext={() => setStep(1)}
+        testo="Attenzione: risparmiare e investire sono due cose diverse. Il fondo emergenza è una rete, deve stare fermo e disponibile subito. L'investimento fa crescere i soldi, ma può scendere proprio quando ti servono. Due salvadanai separati — partiamo dalla rete."
+      />
     )
   }
 
   // ── Nessun budget destinato al futuro ────────────────────────────────────
   if (budgetFuturo === 0) {
     return (
-      <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-slate-900/60" />
-        <CharacterSprite character="sara" state="seria" position="right" size="lg" />
-        <div className="absolute bottom-6 left-4 right-4 sm:right-56 z-20">
-          <SpeechBubble
-            speaker="Sara"
-            verso="right"
-            onNext={conferma}
-            ctaLabel="vediamo come va"
-            text="Non hai destinato niente al futuro: né rete né investimenti. Questo mese va tutto in spese. Se succede qualcosa, non hai paracadute."
-          />
-        </div>
-      </div>
+      <ScenaDialogo
+        sfondo="/assets/casa.png"
+        destra={{ character: 'sara', state: 'seria' }}
+        sinistra={{ character: 'protagonista', state: 'preoccupato' }}
+        chiParla="destra"
+        speaker="Sara"
+        onNext={conferma}
+        ctaLabel="vediamo come va"
+        testo="Non hai destinato niente al futuro: né rete né investimenti. Questo mese va tutto in spese. Se succede qualcosa, non hai paracadute."
+      />
     )
   }
 

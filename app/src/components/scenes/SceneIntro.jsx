@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import CharacterSprite from '../ui/CharacterSprite'
-import SpeechBubble from '../ui/SpeechBubble'
+import ScenaDialogo from '../ui/ScenaDialogo'
 import { useTypewriter } from '../../hooks/useTypewriter'
 
 const NARRAZIONE = [
@@ -16,44 +16,31 @@ export default function SceneIntro({ dispatch }) {
   const [step, setStep] = useState(0)
   const narrazioneFinita = step >= NARRAZIONE.length
 
-  function avanti() {
-    setStep((s) => s + 1)
-  }
+  const inizia = () => dispatch({ type: 'NEXT_SCENE' })
 
-  function inizia() {
-    dispatch({ type: 'NEXT_SCENE' })
+  // Sara entra in scena solo alla fine della narrazione.
+  if (narrazioneFinita) {
+    return (
+      <ScenaDialogo
+        sfondo="/assets/casa.png"
+        sinistra={{ character: 'protagonista', state: 'neutro' }}
+        destra={{ character: 'sara', state: 'sorridente' }}
+        chiParla="destra"
+        speaker="Sara"
+        testo={SARA}
+        azioni={[
+          { label: 'Sì, grazie Sara!', onClick: inizia, variante: 'primario' },
+          { label: 'Ce la faccio da solo', onClick: inizia },
+        ]}
+      />
+    )
   }
 
   return (
     <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center overflow-hidden">
-      <div className="absolute inset-0 bg-slate-900/40" />
-
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/60" />
       <CharacterSprite character="protagonista" state="neutro" position="left" size="lg" />
-      {narrazioneFinita && (
-        <CharacterSprite character="sara" state="sorridente" position="right" size="lg" />
-      )}
-
-      {!narrazioneFinita ? (
-        <Didascalia testo={NARRAZIONE[step]} onNext={avanti} />
-      ) : (
-        <div className="absolute bottom-5 left-4 right-4 sm:left-44 sm:right-44 z-20">
-          <SpeechBubble speaker="Sara" verso="right" text={SARA} />
-          <div className="flex gap-3 mt-7">
-            <button
-              onClick={inizia}
-              className="flex-1 bg-green-600 hover:bg-green-500 text-white font-mono text-sm py-3 rounded-xl transition-all hover:-translate-y-0.5"
-            >
-              Sì, grazie Sara!
-            </button>
-            <button
-              onClick={inizia}
-              className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 font-mono text-sm py-3 rounded-xl transition-all hover:-translate-y-0.5"
-            >
-              Ce la faccio da solo
-            </button>
-          </div>
-        </div>
-      )}
+      <Didascalia testo={NARRAZIONE[step]} onNext={() => setStep((s) => s + 1)} />
     </div>
   )
 }
@@ -66,9 +53,9 @@ function Didascalia({ testo, onNext }) {
   return (
     <div
       onClick={onNext}
-      className="absolute bottom-6 left-4 right-4 z-20 cursor-pointer select-none"
+      className="absolute bottom-6 left-4 right-4 z-30 cursor-pointer select-none"
     >
-      <div className="bg-slate-950/85 border border-slate-600 rounded-xl px-5 py-4 max-w-xl mx-auto backdrop-blur-sm">
+      <div className="bg-slate-950/85 border border-slate-600 rounded-2xl px-5 py-4 max-w-xl mx-auto backdrop-blur-sm">
         <p className="text-slate-100 text-sm font-mono leading-relaxed text-center">
           {mostrato}
           {!completo && <span className="animate-pulse">▌</span>}

@@ -23,11 +23,17 @@ const PENSIEROSI = new Set([
   'triste',
 ])
 
+// Percentuali dell'altezza della scena, non rem: così il personaggio riempie
+// sempre la stessa porzione di schermo su qualsiasi viewport.
+//
+// Le proporzioni sono tarate sugli sfondi, che sono interni di stanze: una
+// persona in piedi occupa circa due terzi dell'inquadratura. Sopra il 75%
+// sembra un gigante incollato davanti alla parete.
 const ALTEZZE = {
-  sm: 'h-36',
-  md: 'h-56',
-  lg: 'h-72',
-  xl: 'h-[22rem] sm:h-96',
+  sm: 'h-[34%]',
+  md: 'h-[46%]',
+  lg: 'h-[58%]',
+  xl: 'h-[70%]',
 }
 
 export default function CharacterSprite({
@@ -36,14 +42,15 @@ export default function CharacterSprite({
   position = 'right',
   size = 'md',
   flip = false,
+  className = '',
 }) {
   const set = SPRITE[character] ?? SPRITE.sara
   const src = PENSIEROSI.has(state) ? set.pensieroso : set.sereno
-  const lato = position === 'left' ? 'left-1 sm:left-4' : 'right-1 sm:right-4'
+  const lato = position === 'left' ? 'left-0 sm:left-2' : 'right-0 sm:right-2'
 
   return (
     <div
-      className={`absolute bottom-0 ${lato} pointer-events-none select-none z-10`}
+      className={`absolute bottom-0 ${lato} pointer-events-none select-none z-10 ${className}`}
       style={{ transform: flip ? 'scaleX(-1)' : undefined }}
     >
       {/* ombra a terra: aggancia il personaggio allo sfondo invece di

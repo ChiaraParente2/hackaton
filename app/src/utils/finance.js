@@ -10,6 +10,7 @@ export const STIPENDIO = 1400
 export const ALLOGGI = [
   {
     id: 'doppia',
+    gradiente: 'from-emerald-500 to-teal-700',
     nome: 'Stanza in doppia',
     emoji: '🛏️',
     affitto: 250,
@@ -19,6 +20,7 @@ export const ALLOGGI = [
   },
   {
     id: 'singola',
+    gradiente: 'from-sky-500 to-indigo-700',
     nome: 'Stanza singola',
     emoji: '🚪',
     affitto: 400,
@@ -28,6 +30,7 @@ export const ALLOGGI = [
   },
   {
     id: 'monolocale',
+    gradiente: 'from-amber-500 to-orange-700',
     nome: 'Monolocale',
     emoji: '🏠',
     affitto: 550,
@@ -37,6 +40,7 @@ export const ALLOGGI = [
   },
   {
     id: 'bilocale',
+    gradiente: 'from-rose-500 to-red-800',
     nome: 'Bilocale',
     emoji: '🏡',
     affitto: 750,

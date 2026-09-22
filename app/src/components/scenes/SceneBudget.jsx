@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import CharacterSprite from '../ui/CharacterSprite'
+import ScenaDialogo from '../ui/ScenaDialogo'
 import SpeechBubble from '../ui/SpeechBubble'
 import Termine from '../ui/Termine'
 import BudgetPieChart from '../charts/BudgetPieChart'
@@ -24,7 +24,7 @@ const PRESETS = [
     emoji: '🦗',
     nome: 'Cicala',
     valore: () => 0,
-    stileAttivo: 'border-red-400 bg-red-500/15',
+    stileAttivo: 'border-red-400 bg-red-500/20',
     testoAttivo: 'text-red-300',
     tip: 'Zero da parte: ogni euro se ne va subito. Funziona finché non succede niente — e prima o poi qualcosa succede sempre.',
   },
@@ -33,7 +33,7 @@ const PRESETS = [
     emoji: '🎯',
     nome: 'Regola 20%',
     valore: (disponibile) => Math.min(TARGET_RISPARMIO, disponibile),
-    stileAttivo: 'border-green-400 bg-green-500/15',
+    stileAttivo: 'border-green-400 bg-green-500/20',
     testoAttivo: 'text-green-300',
     tip: 'Un quinto dello stipendio al futuro: abbastanza per costruire qualcosa, abbastanza poco da vivere lo stesso. È lo standard consigliato.',
   },
@@ -42,7 +42,7 @@ const PRESETS = [
     emoji: '🐜',
     nome: 'Formica',
     valore: (disponibile) => disponibile,
-    stileAttivo: 'border-blue-400 bg-blue-500/15',
+    stileAttivo: 'border-blue-400 bg-blue-500/20',
     testoAttivo: 'text-blue-300',
     tip: 'Massimo risparmio. Costruisci in fretta, ma lasciarti zero per vivere rende il mese insostenibile: la maggior parte molla dopo poche settimane.',
   },
@@ -84,34 +84,33 @@ export default function SceneBudget({ gameState, dispatch }) {
   // ── Step 0 — Sara introduce la regola ────────────────────────────────────
   if (step === 0) {
     return (
-      <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-slate-900/35" />
-        <CharacterSprite character="sara" state="sorridente" position="right" size="xl" />
-        <div className="absolute bottom-6 left-4 right-4 sm:right-64 z-20">
-          <SpeechBubble
-            speaker="Sara"
-            verso="right"
-            text="Prima regola: lo stipendio si divide PRIMA di spenderlo. Il metodo classico è 50/30/20 — metà per le spese necessarie, un terzo per la tua vita, un quinto per il futuro. Ma prima devi decidere dove vivi: è la voce che pesa di più."
-            onNext={() => setStep(1)}
-          />
-        </div>
-      </div>
+      <ScenaDialogo
+        sfondo="/assets/casa.png"
+        destra={{ character: 'sara', state: 'sorridente' }}
+        sinistra={{ character: 'protagonista', state: 'neutro' }}
+        chiParla="destra"
+        speaker="Sara"
+        onNext={() => setStep(1)}
+        testo="Prima regola: lo stipendio si divide PRIMA di spenderlo. Il metodo classico è 50/30/20 — metà alle spese necessarie, un terzo alla tua vita, un quinto al futuro. Ma prima devi decidere dove vivi: è la voce che pesa di più."
+      />
     )
   }
 
-  // ── Step 1 — Scelta della casa ───────────────────────────────────────────
+  // ── Step 1 — Scelta della casa, come annunci immobiliari ─────────────────
   if (step === 1) {
     return (
       <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center overflow-y-auto">
-        <div className="absolute inset-0 bg-slate-900/70" />
-        <div className="relative z-10 p-4 pb-8">
-          <h2 className="font-mono text-yellow-400 text-lg mb-1 text-center">🔑 Dove vai a vivere?</h2>
-          <p className="text-slate-400 text-xs text-center mb-4 font-mono">
-            Scelta definitiva: diventa una spesa fissa per tutto il mese
-          </p>
+        <div className="absolute inset-0 bg-slate-950/80" />
+        <div className="relative z-10 p-3 pb-6">
+          <div className="text-center mb-3">
+            <h2 className="font-mono text-yellow-400 text-xl">🔑 Dove vai a vivere?</h2>
+            <p className="text-slate-400 text-xs font-mono mt-1">
+              Scelta definitiva · l'affitto diventa una spesa fissa per tutto il mese
+            </p>
+          </div>
 
-          <div className="space-y-2">
-            {ALLOGGI.map((a) => {
+          <div className="grid grid-cols-2 gap-3 max-w-3xl mx-auto">
+            {ALLOGGI.map((a, i) => {
               const fisse = a.affitto + ALTRE_SPESE_FISSE
               const resta = STIPENDIO - fisse
               const quota = pct(fisse)
@@ -120,171 +119,128 @@ export default function SceneBudget({ gameState, dispatch }) {
                 <button
                   key={a.id}
                   onClick={() => scegliCasa(a.id)}
-                  className="group w-full text-left p-3 rounded-xl border-2 bg-slate-800/90 border-slate-700 shadow-lg hover:border-yellow-400 hover:bg-slate-700/90 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-150"
+                  style={{ animationDelay: `${i * 80}ms` }}
+                  className="animate-pop-in group relative overflow-hidden rounded-2xl border-2 border-slate-700 bg-slate-900/90 text-left shadow-xl transition-all duration-200 hover:border-yellow-400 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0"
                 >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={`shrink-0 w-14 h-14 rounded-xl flex items-center justify-center text-3xl border-2 transition-transform group-hover:scale-110 ${
-                        pesante
-                          ? 'bg-red-500/10 border-red-500/40'
-                          : 'bg-green-500/10 border-green-500/30'
-                      }`}
-                    >
+                  {/* copertina */}
+                  <div
+                    className={`relative h-24 flex items-center justify-center bg-gradient-to-br ${a.gradiente}`}
+                  >
+                    <span className="text-6xl drop-shadow-lg transition-transform duration-200 group-hover:scale-110">
                       {a.emoji}
-                    </div>
+                    </span>
+                    <span className="absolute top-2 right-2 bg-slate-950/85 text-white font-mono text-sm font-bold px-2.5 py-1 rounded-full border border-white/20">
+                      {euro(a.affitto)}
+                    </span>
+                    <span className="absolute bottom-2 left-2 bg-slate-950/70 text-[10px] font-mono text-slate-200 px-2 py-0.5 rounded-full">
+                      {a.tag}
+                    </span>
+                  </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-baseline gap-2">
-                        <span className="font-mono text-slate-100 text-sm">{a.nome}</span>
-                        <span className="font-mono text-red-400 text-base font-bold shrink-0">
-                          {euro(a.affitto)}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">
-                          {a.tag}
-                        </span>
-                        <span className="flex gap-0.5 items-center">
-                          {[1, 2, 3, 4].map((i) => (
-                            <span
-                              key={i}
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                i <= a.privacy ? 'bg-purple-400' : 'bg-slate-600'
-                              }`}
-                            />
-                          ))}
-                          <span className="text-[9px] font-mono text-slate-500 ml-1">privacy</span>
-                        </span>
-                      </div>
-
-                      <p className="text-slate-400 text-xs mt-1.5 leading-snug">{a.descrizione}</p>
-
-                      {/* quanto dello stipendio se ne va in spese fisse */}
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${pesante ? 'bg-red-500' : 'bg-orange-400'}`}
-                            style={{ width: `${quota}%` }}
+                  <div className="p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-sm text-slate-100">{a.nome}</span>
+                      <span className="flex gap-0.5 items-center shrink-0">
+                        {[1, 2, 3, 4].map((n) => (
+                          <span
+                            key={n}
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              n <= a.privacy ? 'bg-purple-400' : 'bg-slate-700'
+                            }`}
                           />
-                        </div>
-                        <span
-                          className={`font-mono text-[10px] shrink-0 ${pesante ? 'text-red-400' : 'text-slate-400'}`}
-                        >
-                          {quota}% fisse
-                        </span>
-                      </div>
-
-                      <p className="text-xs font-mono mt-1.5 text-slate-500">
-                        ti restano{' '}
-                        <span className="text-green-400 font-bold text-sm">{euro(resta)}</span>
-                        {pesante && <span className="text-red-400"> · oltre metà stipendio ⚠️</span>}
-                      </p>
+                        ))}
+                      </span>
                     </div>
+                    <p className="text-slate-400 text-[11px] leading-snug mt-1 h-8">
+                      {a.descrizione}
+                    </p>
+
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full animate-grow-in ${pesante ? 'bg-red-500' : 'bg-orange-400'}`}
+                          style={{ width: `${quota}%` }}
+                        />
+                      </div>
+                      <span
+                        className={`font-mono text-[10px] shrink-0 ${pesante ? 'text-red-400' : 'text-slate-400'}`}
+                      >
+                        {quota}% fisse
+                      </span>
+                    </div>
+
+                    <div className="mt-2 pt-2 border-t border-slate-800 flex items-baseline justify-between">
+                      <span className="text-[10px] font-mono text-slate-500">ti restano</span>
+                      <span className="font-mono text-lg font-bold text-green-400">
+                        {euro(resta)}
+                      </span>
+                    </div>
+                    {pesante && (
+                      <p className="text-red-400 text-[10px] font-mono mt-1">
+                        ⚠️ oltre metà stipendio solo di fisse
+                      </p>
+                    )}
                   </div>
                 </button>
               )
             })}
           </div>
 
-          <p className="text-slate-500 text-xs font-mono text-center mt-3">
-            Affitto + {euro(ALTRE_SPESE_FISSE)} di trasporti, telefono e assicurazione
+          <p className="text-slate-500 text-[11px] font-mono text-center mt-3">
+            Ogni prezzo include {euro(ALTRE_SPESE_FISSE)} di trasporti, telefono e assicurazione
           </p>
         </div>
       </div>
     )
   }
 
-  // ── Step 2 — Ripartizione (una sola leva) ────────────────────────────────
-  const pctFisse = pct(speseFisse)
-  const pctPersonali = pct(spesePersonali)
+  // ── Step 2 — Allocazione: una sola leva, tre scorciatoie ─────────────────
   const pctRisparmio = pct(risparmioOk)
-
-  const verdetto =
-    pctRisparmio === 0
-      ? { emoji: '😟', testo: 'Zero da parte. Al primo imprevisto vai in rosso.', colore: 'text-red-300' }
-      : pctRisparmio < 10
-        ? { emoji: '😐', testo: `Solo il ${pctRisparmio}%: meglio di niente, ma il fondo emergenza cresce pianissimo.`, colore: 'text-orange-300' }
-        : pctRisparmio < 20
-          ? { emoji: '🙂', testo: `${pctRisparmio}% da parte: sei sulla strada giusta, l'obiettivo è 20%.`, colore: 'text-yellow-300' }
-          : pctRisparmio <= 35
-            ? { emoji: '😄', testo: `${pctRisparmio}% da parte: centrato l'obiettivo della regola 50/30/20!`, colore: 'text-green-300' }
-            : { emoji: '😮', testo: `${pctRisparmio}% è tantissimo. Occhio a lasciarti abbastanza per vivere.`, colore: 'text-blue-300' }
-
-  // Se lo slider è fermo su una delle tre strategie Sara dà il consiglio
-  // dedicato, altrimenti commenta la posizione libera.
   const presetAttivo = PRESETS.find((p) => p.valore(disponibile) === risparmioOk)
-  const consiglio = presetAttivo ? presetAttivo.tip : verdetto.testo
+  const consiglio = presetAttivo
+    ? presetAttivo.tip
+    : pctRisparmio < 10
+      ? `Solo il ${pctRisparmio}% da parte: il fondo emergenza cresce pianissimo.`
+      : pctRisparmio <= 35
+        ? `${pctRisparmio}% da parte: sei nella fascia giusta.`
+        : `${pctRisparmio}% è tantissimo. Occhio a lasciarti abbastanza per vivere.`
 
   return (
     <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center overflow-y-auto">
-      <div className="absolute inset-0 bg-slate-900/70" />
-      <div className="relative z-10 p-4 pb-8">
-        <h2 className="font-mono text-yellow-400 text-lg mb-1 text-center">Dividi i tuoi {euro(STIPENDIO)}</h2>
-        <button
-          onClick={() => setStep(1)}
-          className="block mx-auto text-slate-400 hover:text-slate-200 text-xs font-mono mb-3 underline"
-        >
-          {casa.emoji} {casa.nome} · {euro(casa.affitto)} — cambia casa
-        </button>
-
-        {/* Barra 100% dello stipendio: i tre blocchi si muovono insieme */}
-        <div className="mb-1 flex h-9 rounded-lg overflow-hidden border border-slate-600">
-          <div
-            className="bg-red-500/90 flex items-center justify-center transition-all duration-200"
-            style={{ width: `${pctFisse}%` }}
+      <div className="absolute inset-0 bg-slate-950/80" />
+      <div className="relative z-10 p-3 pb-6 max-w-2xl mx-auto">
+        <div className="text-center mb-2">
+          <h2 className="font-mono text-yellow-400 text-xl">Dividi i tuoi {euro(STIPENDIO)}</h2>
+          <button
+            onClick={() => setStep(1)}
+            className="text-slate-400 hover:text-yellow-300 text-xs font-mono mt-0.5 underline"
           >
-            <span className="font-mono text-xs text-white font-bold">{pctFisse}%</span>
-          </div>
-          <div
-            className="bg-yellow-400/90 flex items-center justify-center transition-all duration-200"
-            style={{ width: `${pctPersonali}%` }}
-          >
-            {pctPersonali >= 8 && (
-              <span className="font-mono text-xs text-slate-900 font-bold">{pctPersonali}%</span>
-            )}
-          </div>
-          <div
-            className="bg-green-500/90 flex items-center justify-center transition-all duration-200"
-            style={{ width: `${pctRisparmio}%` }}
-          >
-            {pctRisparmio >= 8 && (
-              <span className="font-mono text-xs text-white font-bold">{pctRisparmio}%</span>
-            )}
-          </div>
+            {casa.emoji} {casa.nome} · {euro(casa.affitto)} — cambia
+          </button>
         </div>
-        <div className="flex justify-between text-xs font-mono">
-          <span className="text-red-400">🏠 Fisse {euro(speseFisse)}</span>
-          <span className="text-yellow-400">🍕 Vita {euro(spesePersonali)}</span>
-          <span className="text-green-400">🌱 Futuro {euro(risparmioOk)}</span>
-        </div>
-        <p className="text-slate-500 text-[10px] font-mono text-center mt-1 mb-4">
-          spesa e bollette escono dalla <span className="text-yellow-500">vita quotidiana</span>
-        </p>
 
-        {/* L'unica leva */}
-        <div className="bg-slate-800/85 rounded-xl p-4 mb-3 border border-slate-600">
-          <div className="flex justify-between items-baseline mb-2">
-            <span className="text-slate-200 text-sm font-mono">💚 Quanto metti da parte?</span>
-            <span className="font-mono text-green-400 text-base font-bold">{euro(risparmioOk)}</span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={disponibile}
-            step={10}
-            value={risparmioOk}
-            onChange={(e) => setRisparmio(Number(e.target.value))}
-            className="w-full h-2 accent-green-500 cursor-pointer"
+        {/* Unico grafico: torta + legenda con gli importi */}
+        <div className="bg-slate-900/80 rounded-2xl p-3 mb-3 border border-slate-700">
+          <BudgetPieChart
+            speseFisse={speseFisse}
+            spesePersonali={spesePersonali}
+            risparmio={risparmioOk}
           />
-          <div className="flex justify-between text-xs font-mono text-slate-500 mt-1">
-            <span>0€</span>
-            <span>tutto il disponibile · {euro(disponibile)}</span>
+          <div className="flex justify-center items-center gap-2 mt-2 pt-2 border-t border-slate-800 font-mono text-xs">
+            <span className="text-slate-500">il tuo mix</span>
+            <span className="text-red-400">{pct(speseFisse)}</span>
+            <span className="text-slate-700">/</span>
+            <span className="text-yellow-400">{pct(spesePersonali)}</span>
+            <span className="text-slate-700">/</span>
+            <span className="text-green-400">{pctRisparmio}</span>
+            <span className="text-slate-600">·</span>
+            <span className="text-slate-500">
+              <Termine id="regola503020">obiettivo 50/30/20</Termine>
+            </span>
           </div>
-
         </div>
 
-        {/* Le tre strategie, in grande: un tap per capire cosa comporta ognuna */}
+        {/* Tre scorciatoie: sono l'interazione principale */}
         <div className="grid grid-cols-3 gap-2 mb-3">
           {PRESETS.map((p, i) => {
             const valore = p.valore(disponibile)
@@ -294,58 +250,53 @@ export default function SceneBudget({ gameState, dispatch }) {
                 key={p.id}
                 onClick={() => setRisparmio(valore)}
                 style={{ animationDelay: `${i * 70}ms` }}
-                className={`animate-pop-in rounded-xl border-2 p-3 text-center transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 ${
-                  attivo ? p.stileAttivo : 'border-slate-700 bg-slate-800/80 hover:border-slate-500'
+                className={`animate-pop-in rounded-2xl border-2 p-3 text-center transition-all duration-150 hover:-translate-y-1 active:translate-y-0 ${
+                  attivo
+                    ? `${p.stileAttivo} shadow-lg`
+                    : 'border-slate-700 bg-slate-900/80 hover:border-slate-500'
                 }`}
               >
-                <div className={`text-4xl mb-1 transition-transform ${attivo ? 'scale-110' : ''}`}>
+                <div
+                  className={`text-5xl mb-1 transition-transform duration-200 ${attivo ? 'scale-110' : ''}`}
+                >
                   {p.emoji}
                 </div>
                 <div className="font-mono text-xs text-slate-100">{p.nome}</div>
                 <div
-                  className={`font-mono text-sm font-bold mt-1 ${attivo ? p.testoAttivo : 'text-slate-500'}`}
+                  className={`font-mono text-base font-bold mt-1 ${attivo ? p.testoAttivo : 'text-slate-500'}`}
                 >
                   {euro(valore)}
-                </div>
-                <div className="font-mono text-[10px] text-slate-500 mt-0.5">
-                  {pct(valore)}% stipendio
                 </div>
               </button>
             )
           })}
         </div>
 
-        {/* Confronto con l'obiettivo */}
-        <div className="bg-slate-800/60 rounded-lg p-2.5 mb-3 flex justify-between items-center">
-          <span className="text-slate-400 text-xs font-mono">Il tuo mix</span>
-          <span className="font-mono text-sm">
-            <span className="text-red-400">{pctFisse}</span>
-            <span className="text-slate-600"> / </span>
-            <span className="text-yellow-400">{pctPersonali}</span>
-            <span className="text-slate-600"> / </span>
-            <span className="text-green-400">{pctRisparmio}</span>
-          </span>
-          <span className="text-slate-500 text-xs font-mono">
-            <Termine id="regola503020">obiettivo 50 / 30 / 20</Termine>
-          </span>
-        </div>
-
-        <div className="mb-3">
-          <BudgetPieChart
-            speseFisse={speseFisse}
-            spesePersonali={spesePersonali}
-            risparmio={risparmioOk}
+        {/* Regolazione fine, secondaria */}
+        <div className="bg-slate-900/80 rounded-2xl p-3 mb-3 border border-slate-700">
+          <div className="flex justify-between items-baseline mb-1">
+            <span className="font-mono text-slate-400 text-xs">o scegli tu quanto risparmiare</span>
+            <span className="font-mono text-green-400 text-lg font-bold">{euro(risparmioOk)}</span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={disponibile}
+            step={10}
+            value={risparmioOk}
+            onChange={(e) => setRisparmio(Number(e.target.value))}
+            className="w-full h-3 accent-green-500 cursor-pointer"
           />
         </div>
 
-        {/* Il consiglio di Sara: cambia con la strategia scelta */}
-        <div className="flex items-end gap-1 mb-4">
+        {/* Consiglio di Sara */}
+        <div className="flex items-end gap-1 mb-3">
           <img
             src={pctRisparmio < 10 ? '/assets/sara_dubbiosa.png' : '/assets/sara.png'}
             alt=""
-            className="h-40 w-auto shrink-0 drop-shadow-xl animate-bob"
+            className="h-40 w-auto shrink-0 drop-shadow-2xl animate-bob"
           />
-          <div className="flex-1 min-w-0 mb-5">
+          <div className="flex-1 min-w-0 mb-6">
             <SpeechBubble speaker="Sara" text={consiglio} verso="left" />
           </div>
         </div>
@@ -353,7 +304,7 @@ export default function SceneBudget({ gameState, dispatch }) {
         {/* Sempre abilitato: il totale non può che fare 1.400€ */}
         <button
           onClick={conferma}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-sm py-3 rounded-lg transition-colors"
+          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-base py-4 rounded-xl transition-all hover:-translate-y-0.5 shadow-lg"
         >
           Conferma budget →
         </button>
@@ -361,4 +312,3 @@ export default function SceneBudget({ gameState, dispatch }) {
     </div>
   )
 }
-

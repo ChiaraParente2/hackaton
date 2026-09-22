@@ -1,51 +1,56 @@
 import { useState } from 'react'
-import CharacterSprite from '../ui/CharacterSprite'
+import SpeechBubble from '../ui/SpeechBubble'
+import { euro, totaleBollette } from '../../utils/finance'
 
 const DOMANDE = [
   {
     id: 'luce',
+    icona: '⚡',
+    mittente: 'Enel Energia',
     domanda: 'Quante ore al giorno tieni le luci accese?',
     opzioni: [
-      { label: '4-6 ore (LED, attenzione)', costo: 28 },
-      { label: '8-10 ore (uso normale)', costo: 45 },
-      { label: '12+ ore (sempre acceso)', costo: 68 },
+      { label: '4-6 ore, LED e attenzione', costo: 28 },
+      { label: '8-10 ore, uso normale', costo: 45 },
+      { label: '12+ ore, sempre accese', costo: 68 },
     ],
   },
   {
     id: 'gas',
+    icona: '🔥',
+    mittente: 'Eni Plenitude',
     domanda: 'Come usi il riscaldamento?',
     opzioni: [
-      { label: 'Solo quando serve, temperatura bassa', costo: 35 },
+      { label: 'Solo quando serve, a bassa temperatura', costo: 35 },
       { label: 'Quotidiano, temperatura media', costo: 65 },
       { label: 'Sempre al massimo', costo: 95 },
     ],
   },
   {
     id: 'internet',
+    icona: '📡',
+    mittente: 'TIM',
     domanda: 'Internet: quale piano hai scelto?',
     opzioni: [
-      { label: 'Fibra base (29€/mese)', costo: 29 },
-      { label: 'Fibra premium (45€/mese)', costo: 45 },
-      { label: 'Fibra + TV (65€/mese)', costo: 65 },
+      { label: 'Fibra base', costo: 29 },
+      { label: 'Fibra premium', costo: 45 },
+      { label: 'Fibra + pacchetto TV', costo: 65 },
     ],
   },
 ]
 
+const ORE = ['09:14', '11:02', '17:38']
+
 export default function SceneBills({ gameState, dispatch }) {
   const [step, setStep] = useState(0)
-  const [bollette, setBollette] = useState({ luce: 0, gas: 0, internet: 29 })
-  const [revealed, setRevealed] = useState([])
+  const [bollette, setBollette] = useState({ luce: 0, gas: 0, internet: 0 })
+  const [arrivate, setArrivate] = useState([])
   const [done, setDone] = useState(false)
 
   function scegliOpzione(id, costo) {
-    const updated = { ...bollette, [id]: costo }
-    setBollette(updated)
-    setRevealed(prev => [...new Set([...prev, id])])
-    if (step < DOMANDE.length - 1) {
-      setStep(step + 1)
-    } else {
-      setDone(true)
-    }
+    setBollette((b) => ({ ...b, [id]: costo }))
+    setArrivate((prev) => [...prev, id])
+    if (step < DOMANDE.length - 1) setStep(step + 1)
+    else setDone(true)
   }
 
   function conferma() {
@@ -54,84 +59,144 @@ export default function SceneBills({ gameState, dispatch }) {
     dispatch({ type: 'NEXT_SCENE' })
   }
 
-  const total = bollette.luce + bollette.gas + bollette.internet
-  const saraState = total > 150 ? 'seria' : total > 100 ? 'neutro' : 'sorridente'
-  const saraMsg = total > 150
-    ? `${total}€ di bollette sono tante! Considera di ridurre i consumi energetici.`
-    : total > 100
-    ? `${total}€ di bollette — nella media. Qualche piccola abitudine può migliorarle.`
-    : `Ottimo! ${total}€ di bollette è un risultato eccellente.`
+  const totale = totaleBollette(bollette)
+  const caro = totale > 150
+  const commento = caro
+    ? `${euro(totale)} di bollette sono tante. La buona notizia: quasi tutto dipende da abitudini che puoi cambiare domani.`
+    : totale > 100
+      ? `${euro(totale)} è nella media. Qualche accorgimento e scendi ancora.`
+      : `${euro(totale)} è un ottimo risultato: hai capito che le bollette non sono un destino, sono consumi.`
 
-  if (!done) {
-    const domanda = DOMANDE[step]
-    return (
-      <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-slate-900/50" />
-        <img src="/assets/phone.png" className="absolute top-4 right-4 w-24 opacity-80 z-10" alt="" />
+  const domanda = DOMANDE[step]
 
-        {/* Bollette rivelate finora */}
-        <div className="absolute top-4 left-4 space-y-1 z-10">
-          {revealed.map(id => (
-            <div key={id} className="bg-slate-800/80 rounded px-2 py-1 animate-fade-in">
-              <span className="text-xs font-mono text-slate-300 capitalize">{id}: </span>
-              <span className="text-xs font-mono text-yellow-400">{bollette[id]}€</span>
+  return (
+    <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center overflow-hidden">
+      <div className="absolute inset-0 bg-slate-950/75" />
+
+      {/* Il telefono: è lo schermo su cui arrivano le bollette */}
+      <div className="absolute left-1/2 -translate-x-1/2 top-2 h-[52%] z-10">
+        <div className="relative h-full">
+          <img src="/assets/phone.png" alt="" className="h-full w-auto drop-shadow-2xl" />
+
+          {/* lo schermo: riquadro interno alla cornice */}
+          <div className="absolute inset-0 px-[8%] py-[4.5%]">
+            <div className="h-full w-full rounded-[7%] overflow-hidden flex flex-col px-[5%] pt-[13%]">
+              <div className="text-center mb-1.5">
+                <div className="font-mono text-[9px] text-slate-600/80 leading-none">
+                  martedì 22
+                </div>
+                <div className="font-mono text-xl font-bold text-slate-700 leading-tight">
+                  {ORE[Math.min(arrivate.length, ORE.length - 1)]}
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-1 overflow-hidden">
+                {arrivate.length === 0 && (
+                  <p className="text-center font-mono text-[8px] text-slate-500/80 mt-3">
+                    nessuna notifica
+                  </p>
+                )}
+                {arrivate.map((id, i) => {
+                  const d = DOMANDE.find((q) => q.id === id)
+                  return (
+                    <div
+                      key={id}
+                      style={{ animationDelay: `${i * 60}ms` }}
+                      className="animate-fade-in bg-white/85 rounded-lg px-1.5 py-1 shadow-sm flex items-start gap-1"
+                    >
+                      <span className="text-[11px] leading-none mt-0.5">{d.icona}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex justify-between items-baseline gap-1">
+                          <span className="font-mono text-[8px] font-bold text-slate-800 truncate">
+                            {d.mittente}
+                          </span>
+                          <span className="font-mono text-[7px] text-slate-400 shrink-0">
+                            {ORE[i]}
+                          </span>
+                        </div>
+                        <div className="font-mono text-[8px] text-slate-600 leading-tight">
+                          Bolletta di {euro(bollette[id])}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+
+                {done && (
+                  <div className="animate-fade-in bg-slate-900/90 rounded-lg px-1.5 py-1 mt-1">
+                    <div className="flex justify-between items-baseline">
+                      <span className="font-mono text-[8px] text-slate-300">Totale mese</span>
+                      <span
+                        className={`font-mono text-[11px] font-bold ${caro ? 'text-red-400' : 'text-green-400'}`}
+                      >
+                        {euro(totale)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div className="absolute inset-0 flex items-end pb-4 px-4 z-10">
-          <div className="bg-slate-800/95 rounded-xl p-5 w-full border border-slate-600">
-            <div className="text-slate-400 text-xs font-mono mb-1">Domanda {step + 1}/{DOMANDE.length}</div>
-            <h3 className="font-mono text-white text-sm mb-4">{domanda.domanda}</h3>
+          {/* pallino rosso col numero di notifiche */}
+          {arrivate.length > 0 && (
+            <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 border-2 border-slate-950 flex items-center justify-center animate-pulse-money">
+              <span className="font-mono text-[11px] font-bold text-white">{arrivate.length}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Domanda o riepilogo */}
+      <div className="absolute inset-x-0 bottom-0 p-3 z-20">
+        {!done ? (
+          <div className="bg-slate-800/95 rounded-2xl p-4 border border-slate-600 max-w-2xl mx-auto">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-2xl">{domanda.icona}</span>
+              <div>
+                <div className="text-slate-500 text-[10px] font-mono">
+                  {domanda.mittente} · domanda {step + 1}/{DOMANDE.length}
+                </div>
+                <h3 className="font-mono text-white text-sm">{domanda.domanda}</h3>
+              </div>
+            </div>
             <div className="space-y-2">
-              {domanda.opzioni.map((opt, i) => (
+              {domanda.opzioni.map((opt) => (
                 <button
-                  key={i}
+                  key={opt.label}
                   onClick={() => scegliOpzione(domanda.id, opt.costo)}
-                  className="w-full text-left p-3 rounded-lg bg-slate-700 hover:bg-slate-600 border border-slate-600 hover:border-slate-400 transition-all"
+                  className="w-full text-left px-3 py-2.5 rounded-xl bg-slate-700/70 hover:bg-slate-600 border-2 border-slate-600 hover:border-yellow-400 transition-all hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center gap-2">
                     <span className="text-slate-200 text-xs font-mono">{opt.label}</span>
-                    <span className="text-yellow-400 font-mono text-sm font-bold">{opt.costo}€</span>
+                    <span className="text-yellow-400 font-mono text-sm font-bold shrink-0">
+                      {euro(opt.costo)}
+                    </span>
                   </div>
                 </button>
               ))}
             </div>
           </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center">
-      <div className="absolute inset-0 bg-slate-900/50" />
-      <img src="/assets/phone.png" className="absolute top-4 right-4 w-24 opacity-80 z-10" alt="" />
-      <CharacterSprite character="sara" state={saraState} position="left" />
-
-      <div className="absolute inset-0 flex items-end pb-4 px-4 z-10">
-        <div className="bg-slate-800/95 rounded-xl p-5 w-full border border-slate-600">
-          <h3 className="font-mono text-yellow-400 text-sm mb-3">📋 Riepilogo bollette mensili</h3>
-          <div className="space-y-2 mb-3">
-            {[['luce', '💡 Luce'], ['gas', '🔥 Gas'], ['internet', '📡 Internet']].map(([k, label]) => (
-              <div key={k} className="flex justify-between animate-fade-in">
-                <span className="text-slate-300 text-xs font-mono">{label}</span>
-                <span className="text-yellow-400 font-mono text-sm">{bollette[k]}€</span>
+        ) : (
+          <div className="max-w-2xl mx-auto">
+            <div className="flex items-end gap-1 mb-2">
+              <img
+                src={caro ? '/assets/sara_dubbiosa.png' : '/assets/sara.png'}
+                alt=""
+                className="h-40 w-auto shrink-0 drop-shadow-2xl animate-bob"
+              />
+              <div className="flex-1 min-w-0 mb-6">
+                <SpeechBubble speaker="Sara" text={commento} verso="left" />
               </div>
-            ))}
-            <div className="border-t border-slate-600 pt-2 flex justify-between">
-              <span className="text-slate-200 text-xs font-mono font-bold">Totale</span>
-              <span className={`font-mono text-base font-bold ${total > 150 ? 'text-red-400' : 'text-green-400'}`}>{total}€</span>
             </div>
+            <button
+              onClick={conferma}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-base py-4 rounded-xl transition-all hover:-translate-y-0.5 shadow-lg"
+            >
+              Avanti →
+            </button>
           </div>
-          <div className="flex gap-2 items-start mb-4">
-            <span className="text-xl">{saraState === 'seria' ? '😐' : '😊'}</span>
-            <p className="text-slate-300 text-xs font-mono">{saraMsg}</p>
-          </div>
-          <button onClick={conferma} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-sm py-3 rounded-lg">
-            Avanti →
-          </button>
-        </div>
+        )}
       </div>
     </div>
   )
