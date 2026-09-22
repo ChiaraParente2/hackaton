@@ -1,71 +1,71 @@
 import { useState } from 'react'
-import DialogBox from '../ui/DialogBox'
 import CharacterSprite from '../ui/CharacterSprite'
+import ScenaDialogo from '../ui/ScenaDialogo'
+import { useTypewriter } from '../../hooks/useTypewriter'
 
-const DIALOGHI = [
-  { speaker: null, text: 'Milano. Settembre. Hai appena firmato il contratto per il tuo primo appartamento.' },
-  { speaker: null, text: 'Sul conto corrente: 1.400€. Il tuo primo stipendio netto.' },
-  { speaker: null, text: 'Per la prima volta nella vita, nessuno ti dice come spenderli.' },
-  { speaker: 'Sara', text: 'Ciao! Sono Sara. Abito al piano di sopra da tre anni. Ho fatto tutti gli errori possibili — posso risparmiarti qualche disastro?' },
+const NARRAZIONE = [
+  'Milano. Settembre. Hai appena firmato il contratto per il tuo primo appartamento.',
+  'Sul conto corrente: 1.400€. Il tuo primo stipendio netto.',
+  'Per la prima volta nella vita, nessuno ti dice come spenderli.',
 ]
+
+const SARA =
+  'Ciao! Sono Sara, abito al piano di sopra da tre anni. Ho fatto tutti gli errori possibili — posso risparmiarti qualche disastro?'
 
 export default function SceneIntro({ dispatch }) {
   const [step, setStep] = useState(0)
-  const [saraVisible, setSaraVisible] = useState(false)
-  const current = DIALOGHI[step]
+  const narrazioneFinita = step >= NARRAZIONE.length
 
-  function handleNext() {
-    if (step === 2) {
-      setSaraVisible(true)
-    }
-    if (step < DIALOGHI.length - 1) {
-      setStep(step + 1)
-    }
-  }
+  const inizia = () => dispatch({ type: 'NEXT_SCENE' })
 
-  function advance() {
-    dispatch({ type: 'NEXT_SCENE' })
+  // Sara entra in scena solo alla fine della narrazione.
+  if (narrazioneFinita) {
+    return (
+      <ScenaDialogo
+        sfondo="/assets/casa.png"
+        sinistra={{ character: 'protagonista', state: 'neutro' }}
+        destra={{ character: 'sara', state: 'sorridente' }}
+        chiParla="destra"
+        speaker="Sara"
+        testo={SARA}
+        azioni={[
+          { label: 'Sì, grazie Sara!', onClick: inizia, variante: 'primario' },
+          { label: 'Ce la faccio da solo', onClick: inizia },
+        ]}
+      />
+    )
   }
 
   return (
-    <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center">
-      <div className="absolute inset-0 bg-slate-900/30" />
+    <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/60" />
+      <CharacterSprite character="protagonista" state="neutro" position="left" size="lg" />
+      <Didascalia testo={NARRAZIONE[step]} onNext={() => setStep((s) => s + 1)} />
+    </div>
+  )
+}
 
-      {saraVisible && (
-        <CharacterSprite character="sara" state="sorridente" position="left" slideIn />
-      )}
+/** Narrazione: didascalia da film, non nuvoletta — nessuno la sta dicendo. */
+function Didascalia({ testo, onNext }) {
+  const mostrato = useTypewriter(testo, 26)
+  const completo = mostrato.length >= testo.length
 
-      {step < DIALOGHI.length - 1 ? (
-        <DialogBox
-          speaker={current.speaker}
-          text={current.text}
-          onNext={handleNext}
-        />
-      ) : (
-        <div className="absolute bottom-4 left-4 right-4 bg-slate-800/90 border border-slate-600 rounded-xl p-4 z-20">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center text-lg shadow shrink-0">😊</div>
-            <div>
-              <div className="font-mono text-yellow-400 text-sm mb-1">Sara</div>
-              <p className="text-slate-100 text-sm leading-relaxed font-mono">{current.text}</p>
-            </div>
+  return (
+    <div
+      onClick={onNext}
+      className="absolute bottom-6 left-4 right-4 z-30 cursor-pointer select-none"
+    >
+      <div className="bg-slate-950/85 border border-slate-600 rounded-2xl px-5 py-4 max-w-xl mx-auto backdrop-blur-sm">
+        <p className="text-slate-100 text-sm font-mono leading-relaxed text-center">
+          {mostrato}
+          {!completo && <span className="animate-pulse">▌</span>}
+        </p>
+        {completo && (
+          <div className="text-center text-slate-500 text-[11px] font-mono mt-2 animate-pulse">
+            ▶ tocca per continuare
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={advance}
-              className="flex-1 bg-green-600 hover:bg-green-500 text-white font-mono text-sm py-2 px-4 rounded-lg transition-colors"
-            >
-              Sì, grazie Sara!
-            </button>
-            <button
-              onClick={advance}
-              className="flex-1 bg-slate-600 hover:bg-slate-500 text-slate-200 font-mono text-sm py-2 px-4 rounded-lg transition-colors"
-            >
-              Ce la faccio da solo
-            </button>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

@@ -16,5 +16,72 @@
 }
 .animate-fade-in { animation: fadeInUp 0.3s ease-out forwards; }
 
+/* Bolla "-220 €" che sale e svanisce quando il patrimonio cambia */
+@keyframes floatUp {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.9); }
+  15%  { opacity: 1; transform: translateY(0) scale(1.05); }
+  30%  { transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-26px) scale(1); }
+}
+.animate-float-up { animation: floatUp 1.4s ease-out forwards; }
+
+/* Pulsazione del contatore quando i soldi si muovono */
+@keyframes pulseMoney {
+  0%, 100% { transform: scale(1); }
+  35%      { transform: scale(1.14); }
+}
+.animate-pulse-money { animation: pulseMoney 0.6s ease-out; }
+
+/* Riempimento delle barre del budget */
+@keyframes growIn {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.animate-grow-in { animation: growIn 0.5s ease-out forwards; transform-origin: left; }
+
+/* Entrata del personaggio dal basso */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-in { animation: slideIn 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+
+/* Comparsa della nuvoletta */
+@keyframes bubblePop {
+  0%   { opacity: 0; transform: scale(0.85) translateY(8px); }
+  70%  { opacity: 1; transform: scale(1.03) translateY(0); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-bubble-pop { animation: bubblePop 0.3s ease-out both; }
+
+/* Card che entrano in sequenza */
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-pop-in { animation: popIn 0.35s ease-out both; }
+
+/* Respiro dei personaggi: senza, sembrano adesivi incollati */
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+.animate-bob { animation: bob 3.4s ease-in-out infinite; }
+
+/* Evidenzia un elemento appena diventato importante */
+@keyframes attenzione {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
+  50%      { box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.35); }
+}
+.animate-attenzione { animation: attenzione 1.6s ease-in-out 2; }
+
+/* Rispetta chi ha disattivato le animazioni di sistema */
+@media (prefers-reduced-motion: reduce) {
+  .animate-bob,
+  .animate-attenzione,
+  .animate-pulse-money,
+  .animate-float-up { animation: none; }
+}
+
 * { box-sizing: border-box; }
 body { margin: 0; background: #0f172a; }

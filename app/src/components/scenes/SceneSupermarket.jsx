@@ -1,10 +1,31 @@
 import { useState } from 'react'
+import SpeechBubble from '../ui/SpeechBubble'
 
 const shelfItems = [
-  { label: 'Tonno 3×2 in offerta', tooltip: 'Offerta 3x2! Tanto lo uso...', price: 12 },
-  { label: 'Biscotti premium', tooltip: 'Me lo merito dopo una settimana dura.', price: 8 },
-  { label: 'Succo bio fancy', tooltip: 'Costa solo 4€, quasi niente.', price: 4 },
-  { label: 'Snack assortiti', tooltip: 'Ne prendo due così ho scorta.', price: 15 },
+  {
+    label: 'Tonno 3×2 in offerta',
+    tooltip: 'Offerta 3x2! Tanto prima o poi lo uso...',
+    price: 12,
+    img: '/assets/tonno.png',
+  },
+  {
+    label: 'Biscotti premium',
+    tooltip: 'Me lo merito, dopo una settimana così.',
+    price: 8,
+    img: '/assets/biscotti.png',
+  },
+  {
+    label: 'Succo bio fancy',
+    tooltip: 'Costa solo 4€, praticamente niente.',
+    price: 4,
+    img: '/assets/succo.png',
+  },
+  {
+    label: 'Snack assortiti',
+    tooltip: 'Ne prendo due così ho scorta.',
+    price: 15,
+    emoji: '🍿',
+  },
 ]
 
 const listaB = [
@@ -78,17 +99,39 @@ export default function SceneSupermarket({ gameState, dispatch }) {
   if (!path) {
     return (
       <div className="relative w-full h-full bg-[url('/assets/supermercato.png')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-slate-900/50" />
-        <div className="absolute inset-0 flex items-center justify-center p-4 z-10">
-          <div className="bg-slate-800/95 rounded-xl p-6 max-w-sm w-full border border-slate-600">
-            <h2 className="font-mono text-yellow-400 text-lg mb-2 text-center">🛒 Al supermercato</h2>
-            <p className="text-slate-300 text-sm font-mono mb-6 text-center">Come vuoi fare la spesa questa settimana?</p>
-            <div className="space-y-3">
-              <button onClick={() => setPath('A')} className="w-full bg-orange-600/80 hover:bg-orange-500 border border-orange-500 text-white font-mono text-sm py-3 rounded-lg">
-                🚶 Giro libero tra gli scaffali
+        <div className="absolute inset-0 bg-slate-900/45" />
+        <div className="absolute inset-x-0 bottom-0 p-3 z-20">
+          <div className="flex items-end gap-1 mb-2">
+            <img
+              src="/assets/protagonista_dubbioso.png"
+              alt=""
+              className="h-40 w-auto shrink-0 drop-shadow-xl animate-bob"
+            />
+            <div className="flex-1 min-w-0 mb-5">
+              <SpeechBubble
+                speaker="Tu"
+                verso="left"
+                text="Eccomi al supermercato. Faccio un giro e vedo cosa mi serve, o seguo la lista che ho preparato a casa?"
+              />
+            </div>
+          </div>
+          <div className="bg-slate-800/95 rounded-xl p-4 border border-slate-600">
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setPath('A')}
+                className="bg-orange-600/80 hover:bg-orange-500 border-2 border-orange-500 text-white font-mono text-sm py-4 rounded-xl transition-all hover:-translate-y-0.5"
+              >
+                <div className="text-3xl mb-1">🚶</div>
+                Giro libero
+                <div className="text-[10px] text-orange-200 mt-0.5">vado a sensazione</div>
               </button>
-              <button onClick={() => setPath('B')} className="w-full bg-green-700/80 hover:bg-green-600 border border-green-500 text-white font-mono text-sm py-3 rounded-lg">
-                📋 Segui la lista preparata
+              <button
+                onClick={() => setPath('B')}
+                className="bg-green-700/80 hover:bg-green-600 border-2 border-green-500 text-white font-mono text-sm py-4 rounded-xl transition-all hover:-translate-y-0.5"
+              >
+                <div className="text-3xl mb-1">📋</div>
+                Segui la lista
+                <div className="text-[10px] text-green-200 mt-0.5">preparata a casa</div>
               </button>
             </div>
           </div>
@@ -101,25 +144,69 @@ export default function SceneSupermarket({ gameState, dispatch }) {
     const item = shelfItems[stepA]
     return (
       <div className="relative w-full h-full bg-[url('/assets/supermercato.png')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-slate-900/50" />
-        <div className="absolute top-4 right-4 bg-slate-800/90 rounded-lg px-3 py-2 z-20">
-          <span className="font-mono text-sm text-slate-300">Totale: </span>
-          <span className={`font-mono text-sm font-bold ${totalA > 180 ? 'text-red-400' : 'text-green-400'}`}>{totalA}€</span>
+        <div className="absolute inset-0 bg-slate-900/45" />
+
+        <div className="absolute top-3 right-3 bg-slate-900/85 border border-slate-600 rounded-lg px-3 py-1.5 z-20">
+          <span className="font-mono text-[10px] text-slate-400 block leading-none">carrello</span>
+          <span
+            className={`font-mono text-base font-bold ${totalA > 180 ? 'text-red-400' : 'text-green-400'}`}
+          >
+            {totalA}€
+          </span>
         </div>
-        <div className="absolute inset-0 flex items-end pb-6 px-4 z-10">
-          <div className="bg-slate-800/95 rounded-xl p-5 w-full border border-slate-600">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-slate-400 font-mono text-xs">Scaffale {stepA + 1}/{shelfItems.length}</span>
-              <span className="text-orange-400 font-mono text-sm font-bold">{item.price}€</span>
+        <div className="absolute top-3 left-3 bg-slate-900/85 border border-slate-600 rounded-lg px-3 py-1.5 z-20">
+          <span className="font-mono text-[10px] text-slate-400 block leading-none">scaffale</span>
+          <span className="font-mono text-base font-bold text-slate-200">
+            {stepA + 1}/{shelfItems.length}
+          </span>
+        </div>
+
+        {/* Il prodotto in evidenza */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-16 z-10 flex flex-col items-center">
+          {item.img ? (
+            <img
+              key={item.label}
+              src={item.img}
+              alt=""
+              className="h-32 sm:h-40 w-auto object-contain drop-shadow-2xl animate-pop-in"
+            />
+          ) : (
+            <div key={item.label} className="text-7xl animate-pop-in">
+              {item.emoji}
             </div>
-            <h3 className="font-mono text-white text-base mb-1">{item.label}</h3>
-            <p className="text-slate-400 text-xs font-mono mb-4 italic">"{item.tooltip}"</p>
+          )}
+          <div className="mt-2 bg-orange-500 text-white font-mono text-sm font-bold px-3 py-1 rounded-full border-2 border-slate-900 shadow-lg">
+            {item.price}€
+          </div>
+        </div>
+
+        {/* Il protagonista che si autoconvince */}
+        <div className="absolute inset-x-0 bottom-0 p-3 z-20">
+          <div className="flex items-end gap-1 mb-2">
+            <img
+              src="/assets/protagonista_dubbioso.png"
+              alt=""
+              className="h-40 w-auto shrink-0 drop-shadow-xl animate-bob"
+            />
+            <div className="flex-1 min-w-0 mb-5">
+              <SpeechBubble key={item.label} speaker="Tu" verso="left" text={item.tooltip} />
+            </div>
+          </div>
+
+          <div className="bg-slate-800/95 rounded-xl p-4 border border-slate-600">
+            <h3 className="font-mono text-white text-sm mb-3 text-center">{item.label}</h3>
             <div className="flex gap-3">
-              <button onClick={() => addItemA(item)} className="flex-1 bg-orange-600 hover:bg-orange-500 text-white font-mono text-sm py-2 rounded-lg">
-                + Aggiungi al carrello
+              <button
+                onClick={() => addItemA(item)}
+                className="flex-1 bg-orange-600 hover:bg-orange-500 text-white font-mono text-sm py-3 rounded-lg transition-all hover:-translate-y-0.5"
+              >
+                🛒 Nel carrello
               </button>
-              <button onClick={skipItemA} className="flex-1 bg-slate-600 hover:bg-slate-500 text-slate-200 font-mono text-sm py-2 rounded-lg">
-                Lascia stare
+              <button
+                onClick={skipItemA}
+                className="flex-1 bg-slate-600 hover:bg-slate-500 text-slate-200 font-mono text-sm py-3 rounded-lg transition-all hover:-translate-y-0.5"
+              >
+                🙅 Lascia stare
               </button>
             </div>
           </div>

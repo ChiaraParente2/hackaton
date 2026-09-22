@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import CharacterSprite from '../ui/CharacterSprite'
+import Termine from '../ui/Termine'
 
 export default function SceneEmergency({ gameState, dispatch }) {
   const [shaking, setShaking] = useState(false)
@@ -19,15 +20,28 @@ export default function SceneEmergency({ gameState, dispatch }) {
 
   const bgSrc = repaired ? '/assets/cucina_riparata.png' : '/assets/cucina_rotta.png'
 
-  function usaFondo() {
-    setRepaired(true)
-    dispatch({ type: 'SET_EMERGENZA', payload: { imprevistoAffrontato: true, costoImprevisto: 180 } })
+  /**
+   * Paga l'imprevisto attingendo PRIMA al fondo emergenza: è esattamente il
+   * motivo per cui il fondo esiste. Solo l'eccedenza tocca il conto corrente.
+   * Prima l'intero importo veniva addebitato al conto e il fondo restava
+   * intatto, quindi i totali non tornavano mai.
+   */
+  function paga(costo, soloConto = false) {
+    const daFondo = soloConto ? 0 : Math.min(fondo, costo)
+    dispatch({
+      type: 'SET_EMERGENZA',
+      payload: {
+        imprevistoAffrontato: true,
+        imprevistoDaFondo: daFondo,
+        imprevistoDaConto: costo - daFondo,
+      },
+    })
     dispatch({ type: 'UNLOCK_CONCEPT', payload: 'imprevisti' })
   }
 
-  function usaRisparmio(costo) {
-    dispatch({ type: 'SET_EMERGENZA', payload: { imprevistoAffrontato: true, costoImprevisto: costo } })
-    dispatch({ type: 'UNLOCK_CONCEPT', payload: 'imprevisti' })
+  function usaFondo() {
+    setRepaired(true)
+    paga(180)
   }
 
   function nextScene() {
@@ -106,7 +120,7 @@ export default function SceneEmergency({ gameState, dispatch }) {
               <div className="flex justify-between"><span>Da risparmi personali</span><span className="text-red-400">-{mancante}€</span></div>
             </div>
             {!gameState.imprevistoAffrontato ? (
-              <button onClick={() => usaRisparmio(180)} className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-mono text-sm py-3 rounded-lg">
+              <button onClick={() => paga(180)} className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-mono text-sm py-3 rounded-lg">
                 Usa fondo + risparmi
               </button>
             ) : (
@@ -135,13 +149,46 @@ export default function SceneEmergency({ gameState, dispatch }) {
             <div className="bg-orange-900/40 border border-orange-500/30 rounded-lg p-3 mb-4">
               <h4 className="font-mono text-orange-300 text-xs mb-2">📊 Prestito personale rapido</h4>
               <div className="font-mono text-xs text-slate-300 space-y-1">
-                <div className="flex justify-between"><span>Importo richiesto</span><span>180€</span></div>
-                <div className="flex justify-between"><span>TAEG</span><span className="text-orange-400">~80%</span></div>
-                <div className="flex justify-between text-red-400 font-bold"><span>Rimborso totale</span><span>192€</span></div>
-                <div className="flex justify-between"><span>Costo extra</span><span className="text-red-300">12€ per niente</span></div>
+                <div className="flex justify-between">
+                  <span>Importo richiesto</span>
+                  <span>180€</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Durata</span>
+                  <span>1 mese</span>
+                </div>
+                <div className="flex justify-between text-slate-400">
+                  <span>
+                    <Termine id="tan" /> 60% → interessi
+                  </span>
+                  <span>9€</span>
+                </div>
+                <div className="flex justify-between text-slate-400">
+                  <span>Commissione di istruttoria</span>
+                  <span>3€</span>
+                </div>
+                <div className="flex justify-between text-red-400 font-bold border-t border-orange-500/30 pt-1 mt-1">
+                  <span>Rimborso totale</span>
+                  <span>192€</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Costo extra</span>
+                  <span className="text-red-300">12€ per niente</span>
+                </div>
+                <div className="flex justify-between bg-orange-950/60 -mx-1 px-1 py-1 rounded mt-1">
+                  <span className="text-orange-200 font-bold">
+                    <Termine id="taeg" /> reale
+                  </span>
+                  <span className="text-orange-300 font-bold">~117%</span>
+                </div>
               </div>
+              <p className="text-slate-400 text-[10px] font-mono mt-2 leading-snug">
+                In pubblicità vedresti «<Termine id="tan">TAN 60%</Termine>». Ma con la
+                commissione dentro, il costo vero è il doppio: è per questo che si confronta
+                il <Termine id="taeg">TAEG</Termine>, non il TAN.
+              </p>
               {!gameState.imprevistoAffrontato ? (
-                <button onClick={() => usaRisparmio(192)} className="w-full mt-3 bg-orange-700 hover:bg-orange-600 text-white font-mono text-xs py-2 rounded-lg">
+                <button onClick={() => paga(192, true)} className="w-full mt-3 bg-orange-700 hover:bg-orange-600 text-white font-mono text-xs py-2 rounded-lg">
                   Usa prestito rapido (192€)
                 </button>
               ) : (
@@ -156,7 +203,7 @@ export default function SceneEmergency({ gameState, dispatch }) {
                 💳 Prestito rapido online
               </button>
               {!gameState.imprevistoAffrontato ? (
-                <button onClick={() => usaRisparmio(60)} className="w-full text-left p-3 rounded-lg bg-slate-700 border border-slate-600 hover:border-slate-400 text-slate-200 font-mono text-xs">
+                <button onClick={() => paga(60)} className="w-full text-left p-3 rounded-lg bg-slate-700 border border-slate-600 hover:border-slate-400 text-slate-200 font-mono text-xs">
                   🔧 Riparazione temporanea "fai da te" (60€)
                 </button>
               ) : (
