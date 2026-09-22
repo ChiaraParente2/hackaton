@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Final Financy — Inclusione finanziaria giocata, non spiegata</title>
+<style>
+  /* ───────────────────────────────────────────────────────────────
+     Sistema visivo Accenture
+     Viola brand #A100FF, nero, bianco, grigi. Il segno ">" come
+     elemento grafico ricorrente. Font Graphik con fallback di sistema.
+     ─────────────────────────────────────────────────────────────── */
+  :root {
+    --purple:        #a100ff;
+    --purple-mid:    #7500c0;
+    --purple-deep:   #460073;
+    --purple-tint:   #f4e9ff;
+    --black:         #000000;
+    --ink:           #1a1a1a;
+    --grey-600:      #6b6b6b;
+    --grey-300:      #d4d4d4;
+    --grey-100:      #f2f2f2;
+    --white:         #ffffff;
+    --accent-pink:   #ff50a0;
+    --max:           1120px;
+    --ease:          cubic-bezier(.22,.61,.36,1);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: "Graphik", "Graphik Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--white);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 { font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; margin: 0; }
+
+  a { color: var(--purple-mid); }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
+
+  /* Il chevron brand: usato come bullet e come marcatore di sezione */
+  .gt { color: var(--purple); font-weight: 600; }
+
+  /* ── Barra superiore ─────────────────────────────────────────── */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--black);
+    border-bottom: 1px solid #222;
+  }
+  .topbar .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .logo {
+    color: var(--white); font-size: 19px; font-weight: 600;
+    letter-spacing: -0.03em; text-decoration: none;
+  }
+  .logo span { color: var(--purple); }
+  .navlinks { display: flex; gap: 26px; }
+  .navlinks a {
+    color: #bdbdbd; text-decoration: none; font-size: 13.5px;
+    letter-spacing: .01em; transition: color .2s var(--ease);
+  }
+  .navlinks a:hover { color: var(--white); }
+  @media (max-width: 760px) { .navlinks { display: none; } }
+
+  /* ── Hero ────────────────────────────────────────────────────── */
+  .hero {
+    position: relative; overflow: hidden;
+    background: var(--black); color: var(--white);
+    padding: 104px 0 96px;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(120% 90% at 82% 8%, rgba(161,0,255,.55) 0%, rgba(161,0,255,0) 58%),
+      radial-gradient(90% 70% at 12% 100%, rgba(70,0,115,.75) 0%, rgba(70,0,115,0) 60%);
+  }
+  .hero::after {
+    content: ">";
+    position: absolute; right: -4vw; top: 50%; transform: translateY(-50%);
+    font-size: 46vw; line-height: .7; font-weight: 600;
+    color: rgba(255,255,255,.035); pointer-events: none;
+  }
+  .hero .wrap { position: relative; z-index: 2; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: #e2cfff; margin-bottom: 26px;
+    border: 1px solid rgba(255,255,255,.22); border-radius: 100px;
+    padding: 7px 16px;
+  }
+  .hero h1 {
+    font-size: clamp(42px, 7.2vw, 88px);
+    max-width: 15ch; margin-bottom: 22px;
+  }
+  .hero h1 em { font-style: normal; color: var(--purple); }
+  .hero .lead {
+    font-size: clamp(17px, 2vw, 21px);
+    color: #dcdcdc; max-width: 56ch; margin: 0 0 40px;
+  }
+  .herometa {
+    display: flex; flex-wrap: wrap; gap: 14px 44px;
+    padding-top: 30px; border-top: 1px solid rgba(255,255,255,.16);
+  }
+  .herometa div { min-width: 120px; }
+  .herometa dt {
+    font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase;
+    color: #9a9a9a; margin-bottom: 4px;
+  }
+  .herometa dd { margin: 0; font-size: 15.5px; font-weight: 500; color: var(--white); }
+
+  /* ── Sezioni ─────────────────────────────────────────────────── */
+  section { padding: 86px 0; }
+  section.tint { background: var(--grey-100); }
+  section.dark { background: var(--black); color: var(--white); }
+  section.dark h2, section.dark h3 { color: var(--white); }
+
+  .kicker {
+    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--purple-mid); margin-bottom: 16px; font-weight: 600;
+  }
+  section.dark .kicker { color: #cfa4ff; }
+
+  h2 { font-size: clamp(30px, 4.2vw, 46px); max-width: 22ch; margin-bottom: 20px; }
+  .sub { font-size: 17.5px; color: var(--grey-600); max-width: 62ch; margin: 0 0 48px; }
+  section.dark .sub { color: #b4b4b4; }
+
+  /* ── Griglie ─────────────────────────────────────────────────── */
+  .grid { display: grid; gap: 22px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 900px) { .g3, .g4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--white); border: 1px solid var(--grey-300);
+    padding: 28px; border-radius: 2px;
+    transition: border-color .25s var(--ease), transform .25s var(--ease);
+  }
+  .card:hover { border-color: var(--purple); transform: translateY(-3px); }
+  .card h3 { font-size: 19px; margin-bottom: 10px; }
+  .card p { margin: 0; font-size: 15px; color: var(--grey-600); }
+  .card .num {
+    display: block; font-size: 12px; letter-spacing: .12em;
+    color: var(--purple); font-weight: 600; margin-bottom: 14px;
+  }
+  section.dark .card {
+    background: #0d0d0d; border-color: #2a2a2a;
+  }
+  section.dark .card p { color: #a8a8a8; }
+  section.dark .card:hover { border-color: var(--purple); }
+
+  /* ── KPI ─────────────────────────────────────────────────────── */
+  .kpi { border-left: 3px solid var(--purple); padding: 4px 0 4px 22px; }
+  .kpi .val {
+    display: block; font-size: clamp(38px, 5vw, 54px);
+    font-weight: 600; letter-spacing: -0.04em; line-height: 1;
+  }
+  .kpi .lbl { display: block; font-size: 14.5px; color: var(--grey-600); margin-top: 10px; }
+  section.dark .kpi .lbl { color: #a8a8a8; }
+
+  /* ── Timeline scene ──────────────────────────────────────────── */
+  .scenes { counter-reset: sc -1; border-top: 1px solid var(--grey-300); }
+  .scene {
+    counter-increment: sc;
+    display: grid; grid-template-columns: 76px 1fr 1.25fr;
+    gap: 26px; align-items: start;
+    padding: 26px 0; border-bottom: 1px solid var(--grey-300);
+  }
+  .scene:hover .scene-n { background: var(--purple); color: var(--white); }
+  .scene-n {
+    display: grid; place-items: center;
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 1px solid var(--grey-300); background: var(--white);
+    font-size: 14px; font-weight: 600; color: var(--purple-mid);
+    transition: background .25s var(--ease), color .25s var(--ease);
+  }
+  .scene-n::before { content: counter(sc); }
+  .scene h3 { font-size: 19px; }
+  .scene h3 + span {
+    display: block; font-size: 12.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--purple-mid); margin-top: 7px;
+  }
+  .scene p { margin: 0; font-size: 15px; color: var(--grey-600); }
+  .scene p code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px; background: var(--purple-tint); color: var(--purple-deep);
+    padding: 1px 5px; border-radius: 2px;
+  }
+  @media (max-width: 860px) {
+    .scene { grid-template-columns: 46px 1fr; }
+    .scene > p { grid-column: 2; }
+  }
+
+  /* ── Tabella confronto ──────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+  caption {
+    text-align: left; font-size: 13px; color: var(--grey-600);
+    padding-bottom: 14px;
+  }
+  th, td { text-align: left; padding: 15px 18px; border-bottom: 1px solid var(--grey-300); }
+  thead th {
+    font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--grey-600); font-weight: 600; border-bottom: 2px solid var(--ink);
+  }
+  tbody th { font-weight: 500; }
+  td.n { font-variant-numeric: tabular-nums; font-weight: 600; }
+  td.up { color: var(--purple-deep); background: var(--purple-tint); }
+
+  /* ── Barre di confronto ─────────────────────────────────────── */
+  .bars { display: grid; gap: 20px; margin-top: 8px; }
+  .bar-row { display: grid; grid-template-columns: 148px 1fr 86px; gap: 16px; align-items: center; }
+  .bar-row .name { font-size: 14.5px; color: var(--grey-600); }
+  .bar-track { height: 26px; background: var(--grey-100); border-radius: 2px; overflow: hidden; }
+  section.dark .bar-track { background: #1c1c1c; }
+  .bar-fill { height: 100%; border-radius: 2px; transform-origin: left; }
+  .bar-fill.hi { background: linear-gradient(90deg, var(--purple-deep), var(--purple)); }
+  .bar-fill.lo { background: linear-gradient(90deg, #3a3a3a, #6b6b6b); }
+  .bar-row .v { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+  @media (max-width: 640px) { .bar-row { grid-template-columns: 96px 1fr 68px; } }
+
+  /* ── Badge concetti ─────────────────────────────────────────── */
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 9px;
+    border: 1px solid var(--grey-300); background: var(--white);
+    padding: 11px 17px; border-radius: 100px; font-size: 14.5px;
+    transition: border-color .2s var(--ease), background .2s var(--ease);
+  }
+  .badge:hover { border-color: var(--purple); background: var(--purple-tint); }
+  .badge b { font-weight: 500; }
+  .badge .ic { font-size: 16px; }
+
+  /* ── Lista con chevron ──────────────────────────────────────── */
+  ul.chev { list-style: none; padding: 0; margin: 0; display: grid; gap: 13px; }
+  ul.chev li {
+    display: grid; grid-template-columns: 18px 1fr; gap: 12px;
+    font-size: 15.5px; color: var(--grey-600);
+  }
+  ul.chev li::before { content: ">"; color: var(--purple); font-weight: 600; }
+  section.dark ul.chev li { color: #b4b4b4; }
+
+  /* ── Blocco Prima / Dopo / Effetto ──────────────────────────── */
+  .ba { display: grid; }
+  .ba-row {
+    display: grid; grid-template-columns: 92px 1fr;
+    gap: 20px; align-items: baseline;
+    padding: 16px 0; border-top: 1px solid var(--grey-300);
+  }
+  .ba-row:last-child { border-bottom: 1px solid var(--grey-300); }
+  .ba-k {
+    font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase;
+    font-weight: 600; color: var(--purple);
+  }
+  .ba-row p { margin: 0; font-size: 15.5px; color: var(--grey-600); }
+  .ba-row p b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 640px) {
+    .ba-row { grid-template-columns: 1fr; gap: 6px; }
+  }
+
+  /* ── Score / livelli ───────────────────────────────────────── */
+  .levels { display: grid; gap: 14px; }
+  .level {
+    display: grid; grid-template-columns: 120px 1fr; gap: 20px;
+    align-items: center; padding: 18px 0;
+    border-top: 1px solid rgba(255,255,255,.14);
+  }
+  .level:first-child { border-top: 0; }
+  .level .tag {
+    font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600;
+  }
+  .level .rng { font-variant-numeric: tabular-nums; color: #8f8f8f; font-size: 13.5px; }
+  .level p { margin: 4px 0 0; font-size: 15px; color: #b4b4b4; }
+
+  /* ── Nota / disclaimer ─────────────────────────────────────── */
+  .note {
+    border-left: 3px solid var(--purple);
+    background: var(--purple-tint); padding: 24px 26px;
+    font-size: 15px; color: var(--purple-deep);
+  }
+  .note strong { color: var(--purple-deep); }
+
+  /* ── Footer ────────────────────────────────────────────────── */
+  footer {
+    background: var(--black); color: #8f8f8f;
+    padding: 56px 0 44px; font-size: 13.5px;
+  }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: flex-end; }
+  footer .mark { color: var(--white); font-size: 21px; font-weight: 600; letter-spacing: -.03em; }
+  footer .mark span { color: var(--purple); }
+
+  /* ── Animazione d'ingresso ─────────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  @media print {
+    .topbar { position: static; }
+    .hero::after { display: none; }
+    section { padding: 32px 0; page-break-inside: avoid; }
+    .card:hover, .scene:hover .scene-n { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="logo" href="#top">Final Financy<span>&gt;</span></a>
+    <nav class="navlinks">
+      <a href="#prodotto">Il prodotto</a>
+      <a href="#come">Come funziona</a>
+      <a href="#insegna">Cosa insegna</a>
+      <a href="#risultati">Risultati</a>
+      <a href="#responsabilita">Responsabilità</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ══ HERO ══════════════════════════════════════════════════ -->
+<div class="hero" id="top">
+  <div class="wrap">
+    <span class="eyebrow"><span class="gt">&gt;</span> Hackathon · Tema 02 · Inclusione finanziaria</span>
+    <h1>L'educazione finanziaria si <em>gioca</em>, non si spiega.</h1>
+    <p class="lead">
+      Un ragazzo di 13-18 anni, il suo primo stipendio da 1.400&nbsp;€, un mese da far quadrare.
+      Ogni scelta ha un numero, ogni numero una conseguenza.
+    </p>
+    <dl class="herometa">
+      <div><dt>Prodotto</dt><dd>Web app single-page</dd></div>
+      <div><dt>Target</dt><dd>13-18 anni</dd></div>
+      <div><dt>Durata sessione</dt><dd>~8 minuti</dd></div>
+      <div><dt>Stack</dt><dd>React 18 · Vite · Tailwind 4</dd></div>
+      <div><dt>Backend</dt><dd>Nessuno</dd></div>
+    </dl>
+  </div>
+</div>
+
+<!-- ══ IL PRODOTTO ═══════════════════════════════════════════ -->
+<section id="prodotto">
+  <div class="wrap">
+    <p class="kicker">Il prodotto</p>
+    <h2 class="reveal">Un mese di vita adulta, condensato in otto minuti</h2>
+    <p class="sub reveal">
+      Un gioco narrativo in pixel art: si vive un mese accanto a Sara, la vicina che «ha già fatto
+      tutti gli errori possibili». Sotto, un motore economico unico — ogni cifra a schermo esce
+      dallo stesso modello.
+    </p>
+
+    <div class="grid g3">
+      <div class="card reveal">
+        <span class="num">01</span>
+        <h3>Decisioni, non nozioni</h3>
+        <p>
+          Dove abitare, come dividere lo stipendio, come fare la spesa. Il gioco non corregge:
+          mostra il conto.
+        </p>
+      </div>
+      <div class="card reveal">
+        <span class="num">02</span>
+        <h3>Conseguenze immediate</h3>
+        <p>
+          Il saldo è sempre a schermo. Chi non ha risparmiato nella scena 2 lo scopre nella scena 5,
+          quando il frigo si rompe.
+        </p>
+      </div>
+      <div class="card reveal">
+        <span class="num">03</span>
+        <h3>Zero attrito, zero dati</h3>
+        <p>
+          Si apre in un browser e parte. Nessun login, nessun backend, nessun cookie. Funziona
+          offline, anche da smartphone.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ COME FUNZIONA ═════════════════════════════════════════ -->
+<section class="tint" id="come">
+  <div class="wrap">
+    <p class="kicker">Come funziona</p>
+    <h2 class="reveal">Le otto scene del mese</h2>
+    <p class="sub reveal">
+      Una decisione per scena, un concetto sbloccato. Quello che decidi all'inizio ti torna addosso
+      alla fine.
+    </p>
+
+    <div class="scenes reveal">
+      <div class="scene">
+        <div class="scene-n"></div>
+        <div>
+          <h3>Intro</h3>
+          <span>Narrazione</span>
+        </div>
+        <p>
+          Milano, settembre, 1.400&nbsp;€ sul conto. Entra Sara: «prima di spendere un euro, decidi
+          dove vanno».
+        </p>
+      </div>
+
+      <div class="scene">
+        <div class="scene-n"></div>
+        <div>
+          <h3>Budget</h3>
+          <span>Casa + regola 50/30/20</span>
+        </div>
+        <p>
+          Quattro alloggi da 250&nbsp;€ a 750&nbsp;€, più 150&nbsp;€ fissi. La casa si sceglie una
+          volta sola e vale metà del budget.
+        </p>
+      </div>
+
+      <div class="scene">
+        <div class="scene-n"></div>
+        <div>
+          <h3>Risparmi</h3>
+          <span>Fondo emergenza + investimento</span>
+        </div>
+        <p>
+          Obiettivo del fondo: <code>3 × le tue spese</code>, non un numero da manuale. Il resto si
+          investe tra conto deposito (3%), ETF (7%) e azionario (8%).
+        </p>
+      </div>
+
+      <div class="scene">
+        <div class="scene-n"></div>
+        <div>
+          <h3>Supermercato</h3>
+          <span>Due percorsi alternativi</span>
+        </div>
+        <p>
+          Giro libero tra gli scaffali o lista preparata. Alla cassa i due totali stanno uno
+          accanto all'altro, proiettati su dodici mesi.
+        </p>
+      </div>
+
+      <div class="scene">
+        <div class="scene-n"></div>
+        <div>
+          <h3>Bollette</h3>
+          <span>Tre domande sui consumi</span>
+        </div>
+        <p>
+          Luci, riscaldamento, piano internet: le risposte generano la bolletta, da 92&nbsp;€ a
+          228&nbsp;€. Fisse sì, ma variabili nell'importo.
+        </p>
+      </div>
+
+      <div class="scene">
+        <div class="scene-n"></div>
+        <div>
+          <h3>Emergenza</h3>
+          <span>Il frigo si rompe · 180&nbsp;€</span>
+        </div>
+        <p>
+          Tre esiti secondo il fondo della scena 2. Senza copertura resta il prestito rapido:
+          TAEG all'80%, 192&nbsp;€ da restituire.
+        </p>
+      </div>
+
+      <div class="scene">
+        <div class="scene-n"></div>
+        <div>
+          <h3>Riepilogo</h3>
+          <span>Estratto conto + badge</span>
+        </div>
+        <p>
+          Le voci del mese scorrono fino al saldo, accanto ai concetti sbloccati. Il bilancio quadra
+          per costruzione, non per coincidenza.
+        </p>
+      </div>
+
+      <div class="scene">
+        <div class="scene-n"></div>
+        <div>
+          <h3>Fine</h3>
+          <span>Punteggio, livello, rigioca</span>
+        </div>
+        <p>
+          Punteggio su 100, livello, badge. «Rigioca» azzera tutto: la seconda partita è dove si
+          impara davvero.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ COSA INSEGNA ══════════════════════════════════════════ -->
+<section id="insegna">
+  <div class="wrap">
+    <p class="kicker">Cosa insegna</p>
+    <h2 class="reveal">Nove concetti, nessuna lezione frontale</h2>
+    <p class="sub reveal">
+      Ogni concetto si sblocca vivendolo. Il badge arriva <em>dopo</em> la decisione, non prima.
+    </p>
+
+    <div class="badges reveal" style="margin-bottom:56px">
+      <span class="badge"><span class="ic">📊</span><b>Budget 50/30/20</b></span>
+      <span class="badge"><span class="ic">🏦</span><b>Pagati prima</b></span>
+      <span class="badge"><span class="ic">🛡️</span><b>Fondo emergenza</b></span>
+      <span class="badge"><span class="ic">📈</span><b>Interesse composto</b></span>
+      <span class="badge"><span class="ic">💹</span><b>Investire i risparmi</b></span>
+      <span class="badge"><span class="ic">🛒</span><b>Spesa consapevole</b></span>
+      <span class="badge"><span class="ic">⚡</span><b>Gestione bollette</b></span>
+      <span class="badge"><span class="ic">🔧</span><b>Gestione imprevisti</b></span>
+      <span class="badge"><span class="ic">🗓️</span><b>Pianificazione</b></span>
+    </div>
+
+    <div class="grid g2">
+      <div class="reveal">
+        <h3 style="font-size:23px;margin-bottom:14px">Dalla definizione all'esperienza</h3>
+        <p style="font-size:16px;color:var(--grey-600);max-width:52ch;margin:0 0 8px">
+          La scena del supermercato è il caso più netto.
+        </p>
+        <div class="ba">
+          <div class="ba-row">
+            <span class="ba-k">Prima</span>
+            <p>«La spesa pianificata costa meno di quella impulsiva»: una frase vera che nessuno ricorda.</p>
+          </div>
+          <div class="ba-row">
+            <span class="ba-k">Dopo</span>
+            <p>Cede a due offerte, arriva alla cassa e vede il <b>suo</b> totale accanto a quello della lista.</p>
+          </div>
+          <div class="ba-row">
+            <span class="ba-k">Effetto</span>
+            <p>Lo scarto viene moltiplicato per dodici mesi: un'abitudine diventa una cifra annuale.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <table>
+          <caption>Alla cassa — valori generati dal modello economico del gioco</caption>
+          <thead>
+            <tr><th>Voce</th><th>Giro libero</th><th>Con lista</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>Spesa minima</th><td class="n">190&nbsp;€</td><td class="n">80&nbsp;€</td></tr>
+            <tr><th>Spesa massima</th><td class="n">229&nbsp;€</td><td class="n">92&nbsp;€</td></tr>
+            <tr><th>Differenza mensile</th><td class="n up" colspan="2">fino a 149&nbsp;€</td></tr>
+            <tr><th>Proiezione annuale</th><td class="n up" colspan="2">fino a 1.788&nbsp;€</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ RISULTATI ═════════════════════════════════════════════ -->
+<section class="dark" id="risultati">
+  <div class="wrap">
+    <p class="kicker">Risultati</p>
+    <h2 class="reveal">Cosa abbiamo consegnato, e cosa produce</h2>
+    <p class="sub reveal">
+      Il prodotto è completo e giocabile dall'inizio alla fine.
+    </p>
+
+    <div class="grid g4" style="margin-bottom:64px">
+      <div class="kpi reveal"><span class="val">8</span><span class="lbl">Scene giocabili, dall'intro al punteggio finale</span></div>
+      <div class="kpi reveal"><span class="val">9</span><span class="lbl">Concetti finanziari sbloccabili</span></div>
+      <div class="kpi reveal"><span class="val">~8'</span><span class="lbl">Minuti per una partita completa</span></div>
+      <div class="kpi reveal"><span class="val">0</span><span class="lbl">Backend, dati raccolti, chiamate esterne</span></div>
+    </div>
+
+    <div class="grid g2" style="gap:48px">
+      <div class="reveal">
+        <h3 style="font-size:23px;margin-bottom:8px">Lo scarto che il giocatore vede</h3>
+        <p style="font-size:15.5px;color:#b4b4b4;margin:0 0 26px;max-width:46ch">
+          Calcolato sulle sue scelte, non su medie generiche.
+        </p>
+        <div class="bars">
+          <div class="bar-row">
+            <span class="name">Spesa al supermercato</span>
+            <span class="bar-track"><span class="bar-fill hi" style="width:100%"></span></span>
+            <span class="v">229&nbsp;€</span>
+          </div>
+          <div class="bar-row">
+            <span class="name">…con la lista</span>
+            <span class="bar-track"><span class="bar-fill lo" style="width:40%"></span></span>
+            <span class="v">92&nbsp;€</span>
+          </div>
+          <div class="bar-row">
+            <span class="name">Bollette distratte</span>
+            <span class="bar-track"><span class="bar-fill hi" style="width:100%"></span></span>
+            <span class="v">228&nbsp;€</span>
+          </div>
+          <div class="bar-row">
+            <span class="name">…con consumi attenti</span>
+            <span class="bar-track"><span class="bar-fill lo" style="width:40%"></span></span>
+            <span class="v">92&nbsp;€</span>
+          </div>
+          <div class="bar-row">
+            <span class="name">Frigo senza fondo</span>
+            <span class="bar-track"><span class="bar-fill hi" style="width:100%"></span></span>
+            <span class="v">192&nbsp;€</span>
+          </div>
+          <div class="bar-row">
+            <span class="name">…con fondo emergenza</span>
+            <span class="bar-track"><span class="bar-fill lo" style="width:94%"></span></span>
+            <span class="v">180&nbsp;€</span>
+          </div>
+        </div>
+        <p style="font-size:13.5px;color:#8f8f8f;margin-top:22px">
+          Nell'ultimo caso lo scarto è piccolo per scelta: 12&nbsp;€ per niente. Il punto è che
+          esiste, e cresce con l'importo.
+        </p>
+      </div>
+
+      <div class="reveal">
+        <h3 style="font-size:23px;margin-bottom:8px">Come si misura il giocatore</h3>
+        <p style="font-size:15.5px;color:#b4b4b4;margin:0 0 26px;max-width:46ch">
+          Punteggio su 100 sui comportamenti, non sull'importo allocato: velocità del fondo
+          emergenza (40), aver investito (25), diversificazione (5), saldo non negativo (20),
+          imprevisto gestito (10).
+        </p>
+        <div class="levels">
+          <div class="level">
+            <div>
+              <div class="tag" style="color:#ffd44d">Esperto</div>
+              <div class="rng">70-100 punti</div>
+            </div>
+            <p>Fondo rapido, risparmi investiti, mese in positivo nonostante l'imprevisto.</p>
+          </div>
+          <div class="level">
+            <div>
+              <div class="tag" style="color:#7ab8ff">Apprendista</div>
+              <div class="rng">40-69 punti</div>
+            </div>
+            <p>Le basi ci sono, manca il margine: fondo lento o saldo tirato.</p>
+          </div>
+          <div class="level">
+            <div>
+              <div class="tag" style="color:#b0b0b0">Novizio</div>
+              <div class="rng">0-39 punti</div>
+            </div>
+            <p>Mese in difficoltà. Il gioco chiude con «riprova sapendo quello che sai ora».</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note reveal" style="margin-top:56px;background:#140020;border-left-color:var(--purple);color:#d9c2ff">
+      <strong>Nota sui dati.</strong> Questi numeri descrivono il prodotto consegnato e gli scarti
+      generati dal modello. Non sono test sul target: la validazione con studenti 13-18 anni è il
+      passo successivo.
+    </div>
+  </div>
+</section>
+
+<!-- ══ RESPONSABILITÀ ════════════════════════════════════════ -->
+<section class="tint" id="responsabilita">
+  <div class="wrap">
+    <p class="kicker">Responsabilità</p>
+    <h2 class="reveal">Educazione, non consulenza</h2>
+    <p class="sub reveal">
+      Parlare di soldi a dei minorenni impone limiti precisi. Li abbiamo scritti nel prodotto, non
+      nelle note a piè di pagina.
+    </p>
+
+    <div class="grid g2">
+      <div class="card reveal">
+        <h3>Nessun consiglio personalizzato</h3>
+        <p>
+          Solo principi generali: non dice mai «investi in questo». Le tre opzioni hanno rischio e
+          rendimento dichiarati, e nessuna è la risposta giusta.
+        </p>
+      </div>
+      <div class="card reveal">
+        <h3>Rendimenti dichiarati come stime</h3>
+        <p>
+          Ogni proiezione riporta in chiaro: «stime storiche medie, non garanzie future». Le formule
+          semplificate sono etichettate come didattiche.
+        </p>
+      </div>
+      <div class="card reveal">
+        <h3>Nessun dato personale</h3>
+        <p>
+          Nessuna registrazione, nessun profilo, nessuna analitica. Un insegnante lo usa in classe
+          senza liberatorie.
+        </p>
+      </div>
+      <div class="card reveal">
+        <h3>Accessibile per default</h3>
+        <p>
+          Offline, con asset locali e leggibile da smartphone. Nessuna barriera tecnica tra il
+          ragazzo e il contenuto.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CHIUSURA ══════════════════════════════════════════════ -->
+<section>
+  <div class="wrap">
+    <div class="reveal" style="max-width:34ch">
+      <p class="kicker">In una frase</p>
+      <h2 style="max-width:100%">
+        «Il fondo emergenza non è opzionale. È la differenza tra un imprevisto e una crisi.»
+      </h2>
+      <p style="font-size:16px;color:var(--grey-600);margin-top:18px">
+        Da una slide non la ricorderebbe nessuno. Qui gliela dice Sara nel momento esatto in cui il
+        frigo si è rotto.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="mark">Final Financy<span>&gt;</span></div>
+      <div style="margin-top:8px">Hackathon · Tema 02 Inclusione finanziaria · React 18 · Vite · Tailwind CSS 4 · Recharts</div>
+    </div>
+    <div style="text-align:right">
+      <div>Simulatore educativo · Nessun consiglio finanziario personalizzato</div>
+      <div style="margin-top:6px">Documento interno di presentazione prodotto</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Rivela i blocchi allo scroll. Nessuna dipendenza esterna: la pagina
+  // deve funzionare aperta da file system, offline, come il gioco.
+  (function () {
+    var items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+
+</body>
+</html>
