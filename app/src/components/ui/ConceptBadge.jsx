@@ -1,14 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function ConceptBadge({ concetto, unlocked }) {
   const [showPopup, setShowPopup] = useState(false)
+  // Parte dal valore iniziale: un badge già sbloccato al mount non è una
+  // novità. Prima il popup scattava a ogni mount, quindi in SceneSummary
+  // tutti i concetti già acquisiti sparavano "+1 concetto!" insieme.
+  const eraSbloccato = useRef(unlocked)
 
   useEffect(() => {
-    if (unlocked) {
+    if (unlocked && !eraSbloccato.current) {
+      eraSbloccato.current = true
       setShowPopup(true)
       const t = setTimeout(() => setShowPopup(false), 3000)
       return () => clearTimeout(t)
     }
+    eraSbloccato.current = unlocked
   }, [unlocked])
 
   return (

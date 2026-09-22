@@ -1,13 +1,13 @@
 import ConceptBadge from '../ui/ConceptBadge'
-import { CONCETTI } from '../../utils/finance'
+import { CONCETTI, calcolaPunteggio } from '../../utils/finance'
 
 export default function SceneEnd({ gameState, dispatch }) {
-  const punteggio = gameState.fondoEmergenza + gameState.fondoInvestimento + gameState.rendimentoMese
+  const punteggio = calcolaPunteggio(gameState)
   const sbloccati = gameState.concettiSbloccati.length
   const totale = CONCETTI.length
 
-  const livello = punteggio > 400 ? 'Esperto' : punteggio > 200 ? 'Apprendista' : 'Novizio'
-  const livelloColor = punteggio > 400 ? 'text-yellow-400' : punteggio > 200 ? 'text-blue-400' : 'text-slate-400'
+  const livello = punteggio >= 70 ? 'Esperto' : punteggio >= 40 ? 'Apprendista' : 'Novizio'
+  const livelloColor = punteggio >= 70 ? 'text-yellow-400' : punteggio >= 40 ? 'text-blue-400' : 'text-slate-400'
 
   return (
     <div className="relative w-full h-full bg-[url('/assets/casa.png')] bg-cover bg-center overflow-y-auto">
@@ -26,7 +26,7 @@ export default function SceneEnd({ gameState, dispatch }) {
           </div>
           <div className="bg-slate-800/90 rounded-xl p-3 text-center border border-slate-600">
             <div className="font-mono text-2xl font-bold text-green-400">{punteggio}</div>
-            <div className="text-slate-400 text-xs font-mono mt-1">Punti</div>
+            <div className="text-slate-400 text-xs font-mono mt-1">Punti su 100</div>
           </div>
           <div className="bg-slate-800/90 rounded-xl p-3 text-center border border-slate-600">
             <div className="font-mono text-2xl font-bold text-blue-400">{sbloccati}/{totale}</div>
@@ -50,9 +50,9 @@ export default function SceneEnd({ gameState, dispatch }) {
         <div className="bg-slate-800/90 rounded-xl p-4 mb-6 border border-yellow-500/30">
           <h3 className="font-mono text-yellow-400 text-sm mb-2">💡 La lezione più importante</h3>
           <p className="text-slate-300 text-xs font-mono leading-relaxed">
-            {punteggio > 400
+            {punteggio >= 70
               ? 'Pianificare, risparmiare e investire con costanza è la vera differenza tra chi costruisce ricchezza e chi la rincorre. Continua così!'
-              : punteggio > 200
+              : punteggio >= 40
               ? 'Hai le basi. Ora affina: aumenta il fondo emergenza, scegli investimenti diversificati, e tieni la spesa sotto controllo.'
               : 'Non esiste errore da cui non si impara. Il primo passo è consapevolezza — e oggi ce l\'hai. Riprova e migliora!'}
           </p>

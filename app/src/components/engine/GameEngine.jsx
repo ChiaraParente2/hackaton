@@ -7,22 +7,24 @@ import SceneBills from '../scenes/SceneBills'
 import SceneEmergency from '../scenes/SceneEmergency'
 import SceneSummary from '../scenes/SceneSummary'
 import SceneEnd from '../scenes/SceneEnd'
+import { STIPENDIO, calcolaSaldo, euro } from '../../utils/finance'
 
+// `saldo` e `punteggio` NON stanno qui: sono derivati da calcolaSaldo() e
+// calcolaPunteggio(). Tenerli nello stato li faceva divergere dalle voci
+// effettivamente mostrate nell'estratto conto.
 const initialState = {
   currentScene: 0,
-  stipendio: 1400,
-  saldo: 1400,
+  stipendio: STIPENDIO,
   allocazioni: { speseFisse: 0, spesePersonali: 0, risparmio: 0 },
   fondoEmergenza: 0,
   fondoInvestimento: 0,
   tipoInvestimento: null,
-  rendimentoMese: 0,
   spesaSupermercato: 0,
   bollette: { luce: 0, gas: 0, internet: 29 },
+  costoImprevisto: 0,
   imprevistoAffrontato: false,
   concettiSbloccati: [],
   scelte: {},
-  punteggioRisparmio: 0,
 }
 
 function gameReducer(state, action) {
@@ -36,13 +38,9 @@ function gameReducer(state, action) {
     case 'SET_SAVINGS':
       return { ...state, ...action.payload }
     case 'SET_SPESA':
-      return { ...state, spesaSupermercato: action.payload, saldo: state.saldo - action.payload }
+      return { ...state, spesaSupermercato: action.payload }
     case 'SET_BOLLETTE':
-      return {
-        ...state,
-        bollette: action.payload,
-        saldo: state.saldo - (action.payload.luce + action.payload.gas + action.payload.internet),
-      }
+      return { ...state, bollette: action.payload }
     case 'SET_EMERGENZA':
       return { ...state, ...action.payload }
     case 'UNLOCK_CONCEPT':
@@ -72,6 +70,7 @@ const SCENE_LABELS = ['Intro', 'Budget', 'Risparmi', 'Supermercato', 'Bollette',
 export default function GameEngine() {
   const [gameState, dispatch] = useReducer(gameReducer, initialState)
   const { currentScene } = gameState
+  const saldo = calcolaSaldo(gameState)
 
   const SceneComponent = SCENES[Math.min(currentScene, SCENES.length - 1)]
 
@@ -94,8 +93,8 @@ export default function GameEngine() {
       {/* Saldo indicatore */}
       <div className="flex justify-between items-center px-3 py-1.5 bg-slate-900/80 border-b border-slate-800 shrink-0">
         <span className="text-slate-500 text-xs font-mono">💰 Saldo</span>
-        <span className={`text-sm font-mono font-bold ${gameState.saldo >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-          {gameState.saldo}€
+        <span className={`text-sm font-mono font-bold ${saldo >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          {euro(saldo)}
         </span>
       </div>
 

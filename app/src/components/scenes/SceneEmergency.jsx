@@ -21,12 +21,12 @@ export default function SceneEmergency({ gameState, dispatch }) {
 
   function usaFondo() {
     setRepaired(true)
-    dispatch({ type: 'SET_EMERGENZA', payload: { imprevistoAffrontato: true, saldo: gameState.saldo - 180 } })
+    dispatch({ type: 'SET_EMERGENZA', payload: { imprevistoAffrontato: true, costoImprevisto: 180 } })
     dispatch({ type: 'UNLOCK_CONCEPT', payload: 'imprevisti' })
   }
 
   function usaRisparmio(costo) {
-    dispatch({ type: 'SET_EMERGENZA', payload: { imprevistoAffrontato: true, saldo: gameState.saldo - costo } })
+    dispatch({ type: 'SET_EMERGENZA', payload: { imprevistoAffrontato: true, costoImprevisto: costo } })
     dispatch({ type: 'UNLOCK_CONCEPT', payload: 'imprevisti' })
   }
 

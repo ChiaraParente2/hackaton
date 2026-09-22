@@ -1,7 +1,17 @@
 import { useState } from 'react'
 import CharacterSprite from '../ui/CharacterSprite'
 import CompoundInterestChart from '../charts/CompoundInterestChart'
-import { INVESTIMENTI } from '../../utils/finance'
+import {
+  INVESTIMENTI,
+  OBIETTIVO_FONDO,
+  MESI_OBIETTIVO,
+  SPESE_MENSILI,
+  mesiPerObiettivo,
+  proiezione,
+  euro,
+} from '../../utils/finance'
+
+const ANNI_PROIEZIONE = 10
 
 export default function SceneSavings({ gameState, dispatch }) {
   const maxRisparmio = gameState.allocazioni.risparmio || 280
@@ -11,13 +21,20 @@ export default function SceneSavings({ gameState, dispatch }) {
   const [step, setStep] = useState(0)
 
   const fondoInvestimento = maxRisparmio - fondoEmergenza
-  const mesi = (fondoEmergenza / 1400).toFixed(1)
+
+  // Lo slider è un VERSAMENTO MENSILE, non un fondo già accumulato: la domanda
+  // sensata è "in quanti mesi arrivo a coprire 3 mesi di spese", non "quanti
+  // mesi copro adesso" — che con un tetto di ~280€ darebbe sempre 0,2.
+  const mesiAllObiettivo = mesiPerObiettivo(fondoEmergenza)
 
   const investScelto = INVESTIMENTI.find(i => i.id === tipoInvestimento)
-  const rendimentoMese = investScelto ? Math.round(fondoInvestimento * (investScelto.rendimento / 12)) : 0
+  const proiezione10 = investScelto
+    ? proiezione(0, fondoInvestimento, ANNI_PROIEZIONE, investScelto.rendimento)
+    : 0
+  const versato10 = fondoInvestimento * 12 * ANNI_PROIEZIONE
 
   function conferma() {
-    dispatch({ type: 'SET_SAVINGS', payload: { fondoEmergenza, fondoInvestimento, tipoInvestimento, rendimentoMese } })
+    dispatch({ type: 'SET_SAVINGS', payload: { fondoEmergenza, fondoInvestimento, tipoInvestimento } })
     dispatch({ type: 'UNLOCK_CONCEPT', payload: 'emergenza' })
     dispatch({ type: 'UNLOCK_CONCEPT', payload: 'interesse_composto' })
     dispatch({ type: 'UNLOCK_CONCEPT', payload: 'investimento' })
@@ -50,23 +67,38 @@ export default function SceneSavings({ gameState, dispatch }) {
       <div className="absolute inset-0 bg-slate-900/60" />
       <div className="relative z-10 p-4 pb-8">
         <h2 className="font-mono text-yellow-400 text-lg mb-2 text-center">Gestisci i risparmi</h2>
-        <p className="text-slate-400 text-xs text-center mb-4 font-mono">Hai {maxRisparmio}€/mese da allocare</p>
+        <p className="text-slate-400 text-xs text-center mb-4 font-mono">Hai {euro(maxRisparmio)}/mese da allocare</p>
 
         {/* Step 1: Fondo emergenza */}
         <div className="bg-slate-800/80 rounded-xl p-4 mb-4">
           <h3 className="font-mono text-blue-300 text-sm mb-2">🛡️ Fondo emergenza</h3>
           <div className="flex justify-between mb-1">
             <span className="text-slate-300 text-xs font-mono">Obiettivo mensile</span>
-            <span className="text-blue-400 font-mono text-sm font-bold">{fondoEmergenza}€</span>
+            <span className="text-blue-400 font-mono text-sm font-bold">{euro(fondoEmergenza)}</span>
           </div>
           <input
             type="range" min={50} max={maxRisparmio} step={10} value={fondoEmergenza}
             onChange={e => setFondoEmergenza(Number(e.target.value))}
             className="w-full h-2 accent-blue-500 cursor-pointer mb-2"
           />
-          <p className="text-slate-400 text-xs font-mono">
-            ≈ <span className="text-white">{mesi} mesi</span> di spese coperte
-            {fondoEmergenza >= 420 ? ' ✅ ottimo (3+ mesi)' : fondoEmergenza >= 140 ? ' 🟡 discreto (1+ mese)' : ' ⚠️ poco (meno di 1 mese)'}
+          <p className="text-slate-400 text-xs font-mono leading-relaxed">
+            Obiettivo: <span className="text-white">{MESI_OBIETTIVO} mesi di spese</span> ={' '}
+            <span className="text-white">{euro(OBIETTIVO_FONDO)}</span>
+            <span className="text-slate-500"> ({euro(SPESE_MENSILI)}/mese)</span>
+            <br />
+            {!Number.isFinite(mesiAllObiettivo) ? (
+              <span className="text-orange-300">Senza versamenti non lo raggiungi mai ⚠️</span>
+            ) : (
+              <>
+                A questo ritmo lo raggiungi in{' '}
+                <span className="text-white">{mesiAllObiettivo} mesi</span>
+                {mesiAllObiettivo <= 12
+                  ? ' ✅ ottimo, meno di un anno'
+                  : mesiAllObiettivo <= 24
+                    ? ' 🟡 discreto, entro due anni'
+                    : ' ⚠️ lento, oltre due anni'}
+              </>
+            )}
           </p>
         </div>
 
@@ -81,14 +113,17 @@ export default function SceneSavings({ gameState, dispatch }) {
           </button>
           {showChart && (
             <div className="mt-3">
-              <CompoundInterestChart />
+              <CompoundInterestChart
+                versamentoMensile={fondoInvestimento}
+                evidenzia={tipoInvestimento}
+              />
             </div>
           )}
         </div>
 
         {/* Step 3: Tipo investimento */}
         <div className="bg-slate-800/80 rounded-xl p-4 mb-4">
-          <h3 className="font-mono text-yellow-300 text-sm mb-3">💹 Investi {fondoInvestimento}€/mese</h3>
+          <h3 className="font-mono text-yellow-300 text-sm mb-3">💹 Investi {euro(fondoInvestimento)}/mese</h3>
           <div className="space-y-2">
             {INVESTIMENTI.map(inv => (
               <button
@@ -118,8 +153,17 @@ export default function SceneSavings({ gameState, dispatch }) {
 
         {investScelto && (
           <div className="bg-green-900/40 border border-green-500/30 rounded-lg p-3 mb-4">
-            <p className="text-green-300 font-mono text-xs">
-              📊 Rendimento atteso: ~{rendimentoMese}€/mese con {investScelto.nome}
+            <p className="text-green-300 font-mono text-xs leading-relaxed">
+              📊 Con {investScelto.nome}, versando {euro(fondoInvestimento)}/mese, tra{' '}
+              {ANNI_PROIEZIONE} anni avresti{' '}
+              <span className="font-bold text-green-200">{euro(proiezione10)}</span>
+              <br />
+              <span className="text-green-400/70">
+                {euro(versato10)} versati da te + {euro(proiezione10 - versato10)} di interessi
+              </span>
+            </p>
+            <p className="text-slate-400 text-[10px] italic mt-2">
+              Stime storiche medie, non garanzie future.
             </p>
           </div>
         )}

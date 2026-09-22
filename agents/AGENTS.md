@@ -61,11 +61,10 @@ app/
 │   │       └── SceneEnd.jsx            # Schermata finale
 │   ├── hooks/
 │   │   └── useTypewriter.js            # hook per typewriter effect
-│   ├── utils/
-│   │   └── finance.js                  # calcoli finanziari (rata mutuo, ecc.)
-│   └── assets/                         # → vedi sezione ASSET
+│   └── utils/
+│       └── finance.js                  # modello economico: UNICA fonte dei numeri
 ├── public/
-│   └── assets/                         # asset statici copiati da app/assets/
+│   └── assets/                         # UNICA cartella asset: Vite serve solo questa
 └── index.html
 ```
 
@@ -151,8 +150,8 @@ Hook `useTypewriter(text, speed = 30)` — ritorna stringa parziale che cresce n
   flipped={false}           // true = mirror orizzontale (per slide-in da destra)
 />
 ```
-**Spritesheet protagonist:** `assets/AnimationSheet.png` — griglia 6×5.
-**Spritesheet Sara:** `assets/sara-sheet.png` (da aggiungere, stile coerente).
+**Spritesheet protagonist:** `/assets/AnimationSheet.png` — 192×144 px, griglia **8 colonne × 6 righe** da 24×24 (misurato sul PNG, la vecchia indicazione «6×5» era sbagliata).
+**Sara:** stesso file con `filter: hue-rotate(140deg)`. Nessuno spritesheet dedicato.
 Usa `background-position` calcolato da `(col * frameWidth, row * frameHeight)`.
 Anima con `setInterval` che incrementa `col` ciclicamente quando `animate={true}`.
 
@@ -280,7 +279,7 @@ const PROTAGONIST_FRAMES = {
 
 ### ASSET MANCANTI — Lista e Fonti Gratuite (CC0 / CC-BY)
 
-#### SFONDI — tutti generati con Copilot in `app/assets/bg/`
+#### SFONDI — tutti generati con Copilot in `app/public/assets/`
 
 Un PNG per scena, 800×450, pixel art coerente con `AnimationSheet.png`.
 

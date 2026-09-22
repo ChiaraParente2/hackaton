@@ -1,29 +1,19 @@
 import { useState } from 'react'
 import CharacterSprite from '../ui/CharacterSprite'
 import ConceptBadge from '../ui/ConceptBadge'
-import { CONCETTI } from '../../utils/finance'
+import { CONCETTI, calcolaSaldo, calcolaPunteggio, vociEstrattoConto, euro } from '../../utils/finance'
 
 export default function SceneSummary({ gameState, dispatch }) {
-  const punteggio = gameState.fondoEmergenza + gameState.fondoInvestimento + gameState.rendimentoMese
-  const saldo = gameState.saldo
-  const spesa = gameState.spesaSupermercato
-  const bollette = gameState.bollette
-  const totalBollette = bollette.luce + bollette.gas + bollette.internet
+  // Voci e saldo escono dalla stessa funzione: l'estratto conto quadra per
+  // costruzione, non per coincidenza.
+  const voci = vociEstrattoConto(gameState)
+  const saldo = calcolaSaldo(gameState)
+  const punteggio = calcolaPunteggio(gameState)
 
-  const estretti = [
-    { label: 'Stipendio netto', valore: `+${gameState.stipendio}€`, tipo: 'entrata' },
-    { label: 'Spese fisse', valore: `-${gameState.allocazioni.speseFisse}€`, tipo: 'uscita' },
-    { label: 'Spesa supermercato', valore: `-${spesa}€`, tipo: 'uscita' },
-    { label: 'Bollette', valore: `-${totalBollette}€`, tipo: 'uscita' },
-    { label: 'Fondo emergenza', valore: `-${gameState.fondoEmergenza}€`, tipo: 'risparmio' },
-    { label: 'Investimento', valore: `-${gameState.fondoInvestimento}€`, tipo: 'risparmio' },
-    { label: 'Rendimento atteso', valore: `+${gameState.rendimentoMese}€`, tipo: 'entrata' },
-  ]
-
-  const saraState = punteggio > 400 ? 'felice' : punteggio > 200 ? 'sorridente' : 'seria'
-  const saraMsg = punteggio > 400
+  const saraState = punteggio >= 70 ? 'felice' : punteggio >= 40 ? 'sorridente' : 'seria'
+  const saraMsg = punteggio >= 70
     ? 'Ottimo lavoro! Hai gestito il tuo primo stipendio in modo esemplare. Il tuo futuro te ringrazierà.'
-    : punteggio > 200
+    : punteggio >= 40
     ? 'Buon inizio! Qualche aggiustamento e sarai sulla strada giusta per la libertà finanziaria.'
     : 'Questo mese è stato difficile. La buona notizia: hai imparato lezioni preziose. Il prossimo sarà meglio.'
 
@@ -40,21 +30,21 @@ export default function SceneSummary({ gameState, dispatch }) {
           <div className="bg-slate-800/90 rounded-xl p-3 border border-slate-600">
             <h3 className="font-mono text-slate-300 text-xs mb-2">💳 Estratto conto</h3>
             <div className="space-y-1.5">
-              {estretti.map((r, i) => (
+              {voci.map((r, i) => (
                 <div
-                  key={i}
+                  key={r.label}
                   className="flex justify-between animate-fade-in"
                   style={{ animationDelay: `${i * 100}ms` }}
                 >
                   <span className="text-slate-400 text-xs font-mono">{r.label}</span>
                   <span className={`text-xs font-mono font-bold ${
                     r.tipo === 'entrata' ? 'text-green-400' : r.tipo === 'risparmio' ? 'text-blue-400' : 'text-red-400'
-                  }`}>{r.valore}</span>
+                  }`}>{r.valore > 0 ? '+' : ''}{euro(r.valore)}</span>
                 </div>
               ))}
               <div className="border-t border-slate-600 pt-1 flex justify-between">
-                <span className="text-slate-200 text-xs font-mono font-bold">Saldo</span>
-                <span className={`text-xs font-mono font-bold ${saldo >= 0 ? 'text-green-300' : 'text-red-300'}`}>{saldo}€</span>
+                <span className="text-slate-200 text-xs font-mono font-bold">Saldo a fine mese</span>
+                <span className={`text-xs font-mono font-bold ${saldo >= 0 ? 'text-green-300' : 'text-red-300'}`}>{euro(saldo)}</span>
               </div>
             </div>
           </div>
@@ -81,7 +71,7 @@ export default function SceneSummary({ gameState, dispatch }) {
           </div>
           <div className="flex gap-2">
             <span className="text-slate-400 text-xs font-mono">Punteggio mese:</span>
-            <span className="text-yellow-400 font-mono text-xs font-bold">{punteggio} pt</span>
+            <span className="text-yellow-400 font-mono text-xs font-bold">{punteggio}/100</span>
           </div>
         </div>
 
